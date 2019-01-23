@@ -1,0 +1,128 @@
+* {
+	box-sizing: border-box;
+}
+
+a {
+	text-decoration: none;
+	color: #A9CF54;
+}
+
+.container-inner.container-inner-content {
+	font-size: 0px;
+	margin: auto;
+	position: relative;
+	max-width: 972px;
+	background-color: #1C242D;
+	padding: 6px 0;
+	border: 0;
+}
+
+.content-inner {
+	font-size: 0px;
+	margin-top: 16px;
+}
+
+header {
+	font-size: 16px;
+	color: white;
+	position: relative;
+	padding: 6px 4px;
+	text-transform: uppercase;
+	font-weight: normal;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	display: block;
+	margin: 0;
+
+}
+
+.header-content {
+	padding: 8px;
+	background: #2E3740;
+}
+
+.header-content-container {
+	border-radius: 1px;
+	margin: 13px 0 13px 0;
+	padding: 0;
+	border: 0;
+	font-size: 16px;
+}
+
+.header-content-title h1 {
+	color: white;
+	font-size: 24px;
+}
+
+.header-content-title small {
+	display: block;
+	font-size: 12px;
+	color: #C4C4C4;
+}
+
+table {
+	width: 100%;
+	font-size: 12px;
+	text-align: left;
+	border-collapse: collapse;
+	border-spacing: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	color: white;
+}
+
+table > thead {
+	font-weight: bold;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+table > tbody {
+	color: #d9d9d9;
+}
+
+table > tbody > tr {
+	background: rgba(255,255,255,0.04);
+}
+
+table > tbody > tr:nth-child(2n) {
+	background: rgba(255,255,255,0.02);
+}
+
+.r-none-mobile {
+	display: inline-block;
+	padding: 4px;
+	width: 50%;
+	
+}
+
+.image-container-icon {
+	display: inline-block;
+	margin-right: 2px;
+}
+img {
+	object-fit: cover;
+	height: 24px;
+	width: 36px;
+	border-image-width: 1;
+}
+
+.team-blue {
+	color: #20c2ea;
+}
+
+.team-red {
+	color: #e84017;
+}
+
+th {
+	padding: 4px 6px;
+}
+
+td {
+	padding: 4px;
+}
+

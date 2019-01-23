@@ -1,0 +1,168 @@
+extends layout
+
+block append head
+	link(rel='stylesheet', href='/stylesheets/heroes_detail.css')
+block content
+	div(class='header-content-container')
+		div(class='header-content')
+			div(class='header-content-primary')
+				div(class='header-content-avatar')
+					div(class='image-container image-container-avatar image-container-hero')
+						a(href='#')
+							img(class='image-avatar image-item', src=overview[0].image)
+				div(class='header-content-title')
+					h1 #{overview[0].name.replace(/\*/g, '')}
+					small Overview
+				div(class='header-content-secondary')
+					dl
+						dd #{overview[0].winrate}%
+						dt Win Rate
+					dl
+						dd #{overview[0].popularity}
+						dt Popularity
+					div(class='hero-secondary-ability-icons r-none-mobile')
+		div(class='header-content-nav-container')
+			div(class='header-content-nav')
+				nav(class='header-nav-links')
+					ul
+						li(class='active')
+							a(href='#') Overview
+						li(class='')
+							a(href='#') Abilities
+						li(class='')
+							a(href='#') Items
+						li(class='')
+							a(href='#') Players
+	div(class='content-inner')
+		div(class='row-12')
+			div(class='col-4')
+				div(class='chart section-container')
+					section(class='winrate-weekly')
+						header Win Rate
+							small This Week
+						article
+							canvas(id="winrateChart", width="400", height="200")
+					section(class='pickrate-weekly')
+						header Pick Rate
+							small This Week
+						article
+							canvas(id='pickrateChart', width='400', height='200')
+			div(class='col-8')
+				div(class='most-used-items section-container')
+					section(class='most-used')
+						header Most Used Items
+							small All Time
+						article
+							table(class='items-overview table-content')
+								thead
+									tr
+										th(colspan="2") Item
+										th Times Used
+										th Wins
+										th Win Rate
+								tbody
+									each item in items
+										tr
+											td(class='cell-icon')
+												a(href= '#')
+													img(class='item-icon', src=item.image)
+											td #{item.name}
+											td #{item.timesUsed}
+											td #{item.wins}
+											td #{item.winrate}%
+				div(class='hero-matchups section-container')
+					section(class='heroes')
+						header Best Versus
+						article
+							table(class='heroes-overview table-content')
+								thead
+									tr
+										th(colspan="2") Hero
+										th Win Rate
+										th Matches
+								tbody
+									each hero in matchups
+										tr
+											td(class='cell-icon')
+												a(href='#')
+													img(class='hero-icon', src=hero.image)
+											td #{hero.name.replace(/\*/g, '')}
+											td #{hero.winrate}%
+											td #{hero.played}
+				div(class='hero-matchups section-container')
+					section(class='heroes')
+						header Worst Versus
+						article
+							table(class='heroes-overview table-content')
+								thead
+									tr
+										th(colspan="2") Hero
+										th Win Rate
+										th Matches
+								tbody
+									each hero in worstVersus
+										tr
+											td(class='cell-icon')
+												a(href='#')
+													img(class='hero-icon', src=hero.image)
+											td #{hero.name.replace(/\*/g, '')}
+											td #{hero.winrate}%
+											td #{hero.played}
+	script(src='/scripts/Chart.js')
+	script.	
+		var category = [];
+		var winrate = [];
+		var pickrate = [];
+		!{weekly}.forEach(function(element) {
+			var day = element._id.day.toString();
+			var month = element._id.month.toString();
+			var divider = "/";
+			var date = month.concat(divider,day);
+			category.push(date);
+			winrate.push(element.winrate);
+			pickrate.push(element.pickrate);
+		});
+		console.log(pickrate);
+		var ctx = document.getElementById("winrateChart");
+		var winrateChart = new Chart (ctx, {
+			type: 'line',
+			data: {
+				labels: category,
+				datasets: [{
+					data: winrate,
+					borderColor: '#F9B02F',
+					backgroundColor: 'rgba(249,176,47,0.4)'
+				}],
+			},
+			options: {
+				legend: {
+					display: false
+				},
+			}
+		});
+
+		var xtx = document.getElementById("pickrateChart");
+		var pickrateChart = new Chart (xtx, {
+			type: 'line',
+			data: {
+				labels: category,
+				datasets: [{
+					data: pickrate,
+					borderColor: '#c4c4c4',
+					backgroundColor: 'rgba(196,196,196,0.4)'
+				}],
+			},
+			options: {
+				legend: {
+					display: false
+				},
+				scales: {
+					yAxes: [{
+						ticks: {
+							min: 0,
+							max: 30
+						}
+					}]
+				}
+			}
+		});

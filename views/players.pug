@@ -1,0 +1,32 @@
+extends layout
+
+block append head
+	link(rel='stylesheet', href='stylesheets/players.css')
+
+block content
+
+	div(class='header-content-container')
+		div(class='header-content')
+			div(class='header-content-primary')
+				div(class='header-content-title')
+					h1 Players
+						small All Players
+
+	div(class='content-inner')
+		section
+			article
+				table(class='sortable')
+					thead
+						tr
+							th(class='sortable nosort', data-sortcolumn='0', data-sortkey='0-0') Player
+							th(class='cell-large nosort', data-sortcolumn='2', data-sortkey='2-0') Matches Played
+							th(class='cell-large r-none-mobile nosort', data-sortcolumn='3', data-sortkey='3-0') Win Rate
+							th(class='cell-large r-none-mobile nosort', data-sortcolumn='4', data-sortkey='4-0') Skill Tier
+					tbody
+						each player in player_list
+							tr
+								td(class='cell-large')
+									a(class='link-type-player', href=player.url) #{player.attributes.name}
+								td #{player.played}
+								td(class='r-none-mobile') #{player.winrate}
+								td(class='r-none-mobile') #{player.tier}

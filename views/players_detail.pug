@@ -1,0 +1,107 @@
+extends layout
+
+block append head
+	link(rel='stylesheet', href='/stylesheets/players_detail.css')
+block content
+	div(class='header-content-container')
+		div(class='header-content')
+			div(class='header-content-primary')
+				div(class='header-content-title')
+					h1 #{player[0].attributes.name}
+					small Overview
+			div(class='header-content-secondary')
+				dl
+					dd #{player[0].attributes.stats.rankPoints.blitz.toFixed(0)}
+					dt Blitz MMR
+				dl
+					dd #{player[0].attributes.stats.rankPoints.ranked.toFixed(0)}
+					dt Ranked MMR
+				dl
+					dd #{player[0].attributes.stats.rankPoints.ranked_5v5.toFixed(0)}
+					dt Ranked 5v5 MMR
+				dl
+					dd 
+						span(class="game-record")
+							span(class="wins") #{player[0].attributes.stats.wins}
+							span(class="sep")  - 
+							span(class="losses") #{player[0].losses}
+					dt Record
+				dl
+					dd #{player[0].winRate.toFixed(2)}%
+					dt Winrate
+		div(class='header-content-nav-container')
+			div(class='header-content-nav')
+				nav(class='header-nav-links')
+					ul
+						li(class='active')
+							a(href="") Overview
+						li(class='')
+							a(href= playerid + "/matches") Matches
+						li(class='')
+							a(href= playerid + "/heroes") Heroes
+	div(class='content-inner')
+		div(class='row-12')
+			div(class='col-8')
+				div(class='most-played-heroes section-container')
+					section(class='most-played')
+						header Most Played Heroes
+							small All Time
+						article
+							table(class ='heroes-overview table-content')
+								thead
+									tr
+										th(class='sortable' colspan="2") Hero
+										th Matches
+										th Win%
+										th KDA
+								tbody
+									each hero in playerheroes	
+										tr
+											td(class='hero-icon') 
+												div(class='image-container image-container-hero-icon')
+													a(href="/heroes/" + hero.name.replace(/\*/g, "").toLowerCase())
+														img(class='image-hero image-icon', src=hero.image)
+											td
+												a(href="/heroes/" + hero.name.replace(/\*/g, "").toLowerCase())
+													span #{hero.name.replace(/\*/g, '')}
+											td #{hero.played}
+											td #{hero.winrate}
+											td #{hero.kda.toFixed(2)}
+				div(class='recent-matches section-container')
+					section(class='matches')
+						header Recent Matches
+						article
+							table(class = 'matches-overview table-content')
+								thead
+									tr
+										th(class='sortable', colspan="2") Hero
+										th Result
+										th Mode
+										th Duration
+										th KDA
+								tbody
+									each match in recent_matches
+										if match.seconds < 10
+											- var seconds = "0".concat(match.seconds.toString())
+										tr
+											td(class='hero-icon') 
+												div(class='image-container image-container-hero-icon')
+													a(href="/heroes/" + match.hero_name.replace(/\*/g, "").toLowerCase())
+														img(class='image-hero image-icon', src=match.image)
+											td
+												a(href="/matches/" + match.matchId)
+													span #{match.hero_name.replace(/\*/g, "")}
+											td
+												if match.result == 'true'
+													span Won Match
+												else
+													span Lost Match
+											td #{match.gameMode}
+											if match.seconds < 10
+												td #{match.minutes}:#{seconds}
+											else
+												td #{match.minutes}:#{match.seconds}
+											td #{match.kills}/#{match.deaths}/#{match.assists}
+											
+			div(class='col-4')
+		

@@ -1,0 +1,101 @@
+extends layout
+
+block append head
+	link(rel='stylesheet', href='/stylesheets/hero_detail_abilities.css')
+block content
+	
+	div(class='header-content-container')
+		div(class='header-content')
+			div(class='header-content-primary')
+				div(class='header-content-avatar')
+					div(class='header-content-avatar')
+						div(class='image-container image-container-avatar image-container-hero')
+							a(href=hero.url)
+								img(class='image-avatar image-hero', src= hero.img)
+				div(class='header-content-title')
+					h1 #{hero.modifiedName}
+					small #{hero.role}
+			div(class='header-content-secondary')
+				div(class='hero-secondary-ability-icons r-none-mobile')
+					each ability in hero.abilities
+						img(src=ability.image)
+		div(class='header-content-nav-container')
+			div(class='header-content-nav')
+				nav(class='header-nav-links')
+					ul
+						li(class='')
+							a(href='#') Overview
+						li(class='active')
+							a(href='#') Abilities
+						li(class='')
+							a(href='#') Items
+					
+	div(class='content-inner')
+		div(class='row-12')
+			div(class='col-4')
+				div(class='portable-abilities-attributes-default')
+					section(class='hero_attributes')
+						header Hero Attributes
+						article
+							table(class='main')
+								tbody
+									tr
+										td Health
+										td #{hero.attributes.health}
+									tr
+										td Health Regen
+										td #{hero.attributes.healthRegen}
+									tr
+										td Energy
+										td #{hero.attributes.energy}
+									tr
+										td Energy Regen
+										td #{hero.attributes.energyRegen}
+									tr
+										td Weapon Damage
+										td #{hero.attributes.weaponDamage}
+									tr
+										td Attack Speed
+										td #{hero.attributes.attackSpeed}
+									tr
+										td Armor
+										td #{hero.attributes.armor}
+									tr
+										td Shield
+										td #{hero.attributes.shield}
+									tr
+										td Attack Range
+										td #{hero.attributes.attackRange}
+									tr
+										td Move Speed
+										td #{hero.attributes.moveSpeed}
+			div(class='col-8')
+				each ability in hero.abilities
+					section
+						header #{ability.name}
+							small #{ability.slot}
+						article(style='min-height: 84px')
+							div(class='embedded-tooltip')
+								div(class='skill-tooltip reborn-tooltip')
+									div(class='bigavatar')
+										div(class='image-container image-container-bigavatar image-container-skill')
+											a(href='#')
+												img(class='image-bigavatar image-skill', src=ability.image)
+									div(class='description-container')
+										div(class='description')
+											p #{ability.description}
+										div(class='details')
+											each attribute in ability.details.stats
+												p(class='label') #{attribute.label}
+												span(class='values') #{attribute.value}
+										div(class='notes')
+											ul
+												each note in ability.notes
+													li #{note}
+									div(class='cdmanacost')
+										if ability.details.cooldown
+											img(class='cooldown-icon', src='/images/cooldown-icon.png')
+											span #{ability.details.cooldown}
+										if ability.details.manacost
+											img(class='mana-icon', src='/images/mana-icon.png')
+											span #{ability.details.manacost}

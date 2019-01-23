@@ -1,0 +1,51 @@
+extends layout
+
+block append head
+	link(rel='stylesheet', href='/stylesheets/matches.css')
+
+block content
+
+	div(class='header-content-container')
+		div(class='header-content')
+			div(class='header-content-primary')
+				div(class='header-content-title')
+					h1 Recent Matches
+						small Last 24 Hours
+	div(class='content-inner')
+		section
+			table
+				thead
+					tr
+						th Match ID
+						th Game Mode
+						th Result
+						th(class='cell-large') Duration
+						th(class='r-none-mobile team-blue') Team Blue
+						th(class='r-none-mobile team-red') Team Red
+				tbody
+					each match in match_list
+						tr
+							td 
+								a(href=match.url, style="font-size: 10px") #{match.id}
+								div(class='subtext')
+									time(datetime=match.attributes.createdAt)
+							td #{match.attributes.gameMode}
+							each roster in match.rosters
+								if roster.sides == 'left/blue' && roster.win == 'true'
+									td(class='team-blue') Blue Victory
+								else if roster.sides == 'right/red' && roster.win == 'true'
+									td(class='team-red') Red Victory
+							td #{match.duration}
+							each roster in match.rosters
+								if roster.sides =='left/blue'
+									td(class='r-none-mobile blue')
+										each p in roster.participant
+											each hero in p.hero
+												div(class='image-container-icon')
+													img(src=hero.img) 
+								else
+									td(class='r-none-mobile red')
+										each p in roster.participant
+											each hero in p.hero
+												div(class='image-container-icon')
+													img(src=hero.img)

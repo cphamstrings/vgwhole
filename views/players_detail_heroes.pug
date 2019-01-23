@@ -1,0 +1,66 @@
+extends layout
+
+block append head
+	link(rel='stylesheet', href='/stylesheets/players_detail_heroes.css')
+block content
+	div(class='header-content-container')
+		div(class='header-content')
+			div(class='header-content-primary')
+				div(class='header-content-title')
+					h1 #{heroPlayer[0].playerInfo.name}
+					small Matches
+			div(class='header-content-secondary')
+				dl
+					dd #{heroPlayer[0].playerInfo.rankPoints.blitz.toFixed(0)}
+					dt Blitz MMR
+				dl
+					dd #{heroPlayer[0].playerInfo.rankPoints.ranked.toFixed(0)}
+					dt Ranked MMR
+				dl
+					dd #{heroPlayer[0].playerInfo.rankPoints.ranked_5v5.toFixed(0)}
+					dt Ranked 5v5 MMR
+				dl
+					dd
+						span(class='game-record')
+							span(class='wins') #{heroPlayer[0].playerInfo.wins}
+							span(class='sep') -
+							span(class='losses') #{heroPlayer[0].playerInfo.losses}
+					dt Record
+				dl
+					dd #{heroPlayer[0].playerInfo.winRate.toFixed(2)}%
+					dt Winrate
+		div(class='header-content-nav-container')
+			div(class='header-content-nav')
+				nav(class='header-nav-links')
+					ul
+						li(class='')
+							a(href='/players/' + playerId) Overview
+						li(class='')
+							a(href='/players/' + playerId + '/matches') Matches
+						li(class='active')
+							a(href='') Heroes
+	div(class='content-inner')
+		section
+			article
+				table
+					thead
+						tr
+							th(colspan='2') Hero
+							th Matches
+							th Win Rate
+							th KDA Ratio
+							th GPM
+							th Role
+					tbody
+						each hero in heroPlayer
+							tr
+								td(class='cell-icon')
+									div(class='image-container image-container-hero image-container-icon')
+										a(href='/heroes/' + hero.heroInfo.heroName.replace(/\*/g, '').toLowerCase())
+											img(class='hero-icon' src=hero.heroInfo.heroImage)
+								td #{hero.heroInfo.heroName.replace(/\*/g, '')}
+								td #{hero.gamesPlayed}
+								td #{hero.winRate.toFixed(2)}%
+								td #{hero.avgKDA.toFixed(2)}
+								td #{hero.avgGPM.toFixed(0)}
+								td #{Object.keys(hero.roleTotal).reduce(function(a,b){ return hero.roleTotal[a] > hero.roleTotal[b] ? a : b })}

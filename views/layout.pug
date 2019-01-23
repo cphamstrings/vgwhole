@@ -1,0 +1,77 @@
+doctype html
+html(lang='en')
+	head
+		block head
+			title= title
+			meta(charset='utf-8')
+			meta(name='viewport', content='width=device-width, initial-scale=1')
+			link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css')
+			link(rel='stylesheet', href='/stylesheets/style.css')
+	body
+		div(class='outer-container')
+			div(class='navbar-primary')
+				div(class='header')
+					a(href='/') LOGO
+					a(href='javascript:void(0);', class='icon', onclick='expandHamburger()')
+						i(class='fa fa-bars')
+				div(class='header-nav-left', id='myTopNav')
+					ul
+						li
+							a(class='color-heroes', data-target='navbar-secondary-heroes', href='/heroes') Heroes	
+						li
+							a(class='color-items', data-target='navbar-secondary-items', href='/items') Items
+						li
+							a(class='color-players', data-target='navbar-secondary-players', href='/players') Players
+						li
+							a(class='color-matches', data-target='navbar-secondary-matches', href='/matches') Matches
+				div(class='header-nav-right')
+					ul
+						li
+							a(href='#') Item
+						li
+							a(href='#') Item
+						li
+							a(href='#') Item
+			div(id='navbar-secondary-heroes', class='navbar-secondary')
+				div(class='container-inner')
+					nav(class='header-nav-links toggled')
+						ul
+							li
+								a(href='#') Item
+							li
+								a(href='#') Item
+							li
+								a(href='#') Item
+			div(id='navbar-secondary-items', class='navbar-secondary')
+				div(class='container-inner')
+					nav(class='header-nav-links toggled')
+						ul
+							li
+								a(href='#') Item
+							li
+								a(href='#') Item
+							li
+								a(href='#') Item
+			div(id='navbar-secondary-players', class='navbar-secondary')
+				div(class='container-inner')
+					nav(class='header-nav-links toggled')
+						ul
+							li
+								a(href='#') Item
+							li
+								a(href='#') Item
+							li
+								a(href='#') Item
+			div(id='navbar-secondary-matches', class='navbar-secondary')
+				div(class='container-inner')
+					nav(class='header-nav-links toggled')
+						ul
+							li
+								a(href='#') Item
+							li
+								a(href='#') Item
+							li
+								a(href='#') Item
+			div(class='container-inner')
+				block content
+		script(src='/javascripts/expandmenu.js')

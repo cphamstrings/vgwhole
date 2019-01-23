@@ -1,0 +1,112 @@
+extends layout
+
+block append head
+	link(rel='stylesheet', href='/stylesheets/items_detail.css')
+
+block content
+
+	div(class='header-content-container')
+		div(class='header-content')
+			div(class='header-content-primary')
+				div(class='header-content-avatar')
+					div(class='image-container image-container-avatar image-container-item')
+						a(href="#")
+							img(class='image-avatar image-item', src=itemDetail[0].image)
+				div(class='header-content-title')
+					h1 #{itemDetail[0].name}
+			div(class='header-content-secondary')
+				dl
+					dd #{popularity[0].popularity}
+					dt Popularity
+				dl
+					dd #{popularity[0].winrate.toFixed(2)}%
+					dt Win Rate
+	div(class='content-inner')
+		div(class='row-12')
+			div(class='col-4')
+				div(class='portable-details-default')
+					section(class='item-details')
+						header Item Details
+						article
+							div(class='embedded-tooltip')
+								div(class='item-tooltip')
+									div(class='tooltip-header')
+										div(class='avatar')
+											div(class='image-container image-container-avatar image-container-item')
+												a(href="#")
+													img(class='image-avatar image-item image-item-tooltip', src=itemDetail[0].image)
+										div(class='name-price-header')
+											div(class='name') #{itemDetail[0].name}
+											div(class='price')
+												span(class='gold-icon')
+													img(class='gold-icon' src="/images/gold-icon.png")
+												span(class='value')
+													span(class='number') #{itemDetail[0].price}
+										div(class='tier-category-header')
+											div(class='tier')
+												span(class='value') Tier: #{itemDetail[0].tier}
+											div(class='category')
+												span(class='value') Category: #{itemDetail[0].category}
+									div(class='stats')
+										each attribute in itemDetail[0].attributes
+											div(class='stat attribute')
+												span #{attribute}
+									if itemDetail[0].details[0].label
+										div(class='description')
+											each detail in itemDetail[0].details
+												div(class='description-block')
+													span(class='description-label') #{detail.label}
+													span(class='description-value') #{detail.value}
+									div(class='notes')
+										p #{itemDetail[0].notes}
+									if itemDetail[0].buildsFrom.length > 0
+										div(class='item-build item-builds-from')
+											div(class='title')
+												span(class='smaller') Builds From
+											div(class='order')
+												each item in itemDetail[0].buildsFrom
+													div(class='item')
+														div(class='icon')
+															div(class='image-container image-container-icon image-container-item')
+																a(href='/items/' + item._id)
+																	img(class='image-item-tooltip', src=item.image)
+														
+														div(class='cost')
+															span(class='number-build') #{item.price}
+									if itemDetail[0].buildsInto.length > 0
+										div(class='item-build item-builds-into')
+											div(class='title')
+												span(class='smaller') Builds To
+											div(class='order')
+												each item in itemDetail[0].buildsInto
+													div(class='item')
+														div(class='icon')
+															div(class='image-container image-container-icon image-container-item')
+																a(href='/items/' + item._id)
+																	img(class='image-item-tooltip', src=item.image)
+														div(class='cost')
+															span(class='number-build') #{item.price}
+			div(class='col-8')
+				div(class='most-used-heroes section-container')
+					section(class='most-used')
+						header Most Used by Heroes
+							small All Time
+						article
+							table(class='items-overview table-content')
+								thead
+									tr
+										th(class='sortable nosort', colspan="2") Hero
+										th(class='sortable nosort') Matches
+										th(class='sortable nosort') Wins
+										th(class='sortable nosort') Win Rate
+								tbody
+									each hero in itemHero
+										tr
+											td(class='cell-icon')
+												a(href= '/heroes/' + hero.name.replace(/\*/g, ''))
+													img(class='hero-icon', src=hero.image)
+											td
+												a(href= '/heroes/' + hero.name.replace(/\*/g, '')) #{hero.name.replace(/\*/g, '')}
+											td #{hero.used}
+											td #{hero.won}
+											td #{hero.winrate.toFixed(2)}%

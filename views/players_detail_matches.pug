@@ -1,0 +1,105 @@
+extends layout
+
+block append head
+	link(rel='stylesheet', href='/stylesheets/players_detail_matches.css')
+block content
+	div(class='header-content-container')
+		div(class='header-content')
+			div(class='header-content-primary')
+				div(class='header-content-title')
+					h1 #{matchTotals[0].matches.playerInfo.name}
+					small Matches
+			div(class='header-content-secondary')
+				dl
+					dd #{matchTotals[0].matches.playerInfo.rankPoints.blitz.toFixed(0)}
+					dt Blitz MMR
+				dl
+					dd #{matchTotals[0].matches.playerInfo.rankPoints.ranked.toFixed(0)}
+					dt Ranked MMR
+				dl
+					dd #{matchTotals[0].matches.playerInfo.rankPoints.ranked_5v5.toFixed(0)}
+					dt Ranked 5v5 MMR
+				dl
+					dd
+						span(class='game-record')
+							span(class='wins') #{matchTotals[0].matches.playerInfo.wins}
+							span(class='sep')  - 
+							span(class='losses') #{matchTotals[0].matches.playerInfo.losses}
+					dt Record
+				dl
+					dd #{matchTotals[0].matches.playerInfo.winRate.toFixed(2)}%
+					dt Winrate
+		div(class='header-content-nav-container')
+			div(class='header-content-nav')
+				nav(class='header-nav-links')
+					ul
+						li(class='')
+							a(href='/players/' + playerid) Overview
+						li(class='active')
+							a(href='') Matches
+						li(class='')
+							a(href='/players/' + playerid + '/heroes') Heroes
+	div(class='content-inner')
+		section
+			header Averages for all matches
+			article(id='match-aggregate-stats-target', class='match-aggregate-stats')
+				div(class='r-stats-grid', style='padding: 3px')
+					div(class='group group-soft')
+						div(class='kv mode') #{Object.keys(matchTotals[0].matches.playerInfo.gamesPlayed).reduce(function(a, b){ return matchTotals[0].matches.playerInfo.gamesPlayed[a] > matchTotals[0].matches.playerInfo.gamesPlayed[b] ? a : b })}
+							small Most Common Mode
+						div(class='kv role') #{Object.keys(matchTotals[0].roleTotal).reduce(function(a,b){ return matchTotals[0].roleTotal[a] > matchTotals[0].roleTotal[b] ? a : b })}
+							small Most Common Role
+						div(class='kv matches') #{matchTotals[0].matches.playerInfo.totalPlayed}
+							small Matches
+						- var mind = matchTotals[0].avgDuration % (60 * 60)
+						- var minutes = Math.floor(mind / 60)
+						- var secd = mind % 60
+						- var seconds = Math.ceil(secd)
+						div(class='kv duration') #{minutes}:#{seconds}
+							small Match Duration
+						div(class='kv winrate') #{matchTotals[0].matches.playerInfo.winRate.toFixed(2)}%
+							small Win Rate
+					div(class='group group-soft')
+						div(class='kv kda') #{matchTotals[0].avgKDA.toFixed(2)}
+							small KDA Ratio
+						div(class='kv kills') #{matchTotals[0].avgKills}
+							small Kills
+						div(class='kv deaths') #{matchTotals[0].avgDeaths}
+							small Deaths
+						div(class='kv assists') #{matchTotals[0].avgAssists}
+							small Assists
+						div(class='kv gpm') #{matchTotals[0].avgGPM.toFixed(0)}
+							small GPM
+		section
+			article
+				table
+					thead
+						tr
+							th(colspan='2') Hero
+							th Role
+							th Result
+							th Mode
+							th Duration
+							th KDA
+					tbody
+						each match in matchTotals
+							tr
+								td(class='cell-icon')
+									div(class='image-container image-container-hero image-container-icon')
+										a(href='/heroes/' + match.matches.heroInfo.participantHero.replace(/\*/g, '').toLowerCase())
+											img(class='hero-icon' src=match.matches.heroInfo.heroImage)
+								td(class='cell-large hero-name')
+									a(href='/matches/' + match.matches.matchInfo.matchId) #{match.matches.heroInfo.participantHero.replace(/\*/g, '')}
+								td(class='cell-centered role') #{match.matches.participantStats.role}
+								td
+									if match.matches.participantStats.won == true
+										a(class='won', href='/matches/' + match.matches.matchInfo.matchId) Won Match
+									if match.matches.participantStats.won == false
+										a(class='lost', href='/matches/' + match.matches.matchInfo.matchId) Lost Match
+								td #{match.matches.matchInfo.matchMode}
+								- var mind = match.matches.matchInfo.matchDuration % (60 * 60)
+								- var minutes = Math.floor(mind / 60)
+								- var secd = mind % 60
+								- var seconds = Math.ceil(secd)
+								td(class='cell-duration') #{minutes}:#{seconds}
+								td #{match.matches.participantStats.participantKills}/#{match.matches.participantStats.participantDeaths}/#{match.matches.participantStats.participantAssists}

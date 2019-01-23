@@ -1,0 +1,33 @@
+extends layout
+
+block append head
+	link(rel='stylesheet', href='stylesheets/items.css')
+
+block content
+	div(class='header-content-container')
+		div(class='header-content')
+			div(class='header-content-primary')
+				div(class='header-content-title')
+					h1 Items
+						small Most Used, This Month
+	div(class='content-inner')
+		section
+			article
+				table(class='sortable')
+					thead
+						tr
+							th(class='sortable nosort', colspan="2", data-sortcolumn='0', data-sortkey='0-0') Item
+							th(class='sortable nosort', data-sortcolumn='2', data-sortkey='2-0') Times Used
+							th(class='sortable nosort', data-sortcolumn='3', data-sortkey='3-0') Use Rate
+							th(class='sortable nosort', data-sortcolumn='4', data-sortkey='4-0') Win Rate
+					tbody
+						each item in items
+							tr
+								td(class='cell-icon')
+									img(class='item-icon', src=item.itemImage)
+								td 
+									a(href= '/items/' + item.itemId) #{item.itemName}
+								td #{item.timesUsed}
+								- var total = item.timesUsed / count[0].totalParticipants * 100
+								td #{total.toFixed(2)}%
+								td #{item.winrate.toFixed(2)}%
