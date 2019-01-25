@@ -2,39 +2,14 @@ extends layout
 
 block append head
 	link(rel='stylesheet', href='/stylesheets/home.css')
+block append content
+	section
+		article
+			div(class='logo-container')
+				img(class='main-logo' src='/images/asdf.svg.png')
+			div(class='search-container')
+				div(class='home-search')
+					form(action='/search', accept-charset='UTF-8', method='get')
+						input(id='q', type='text', placehold='Search...', class='search')
+						button(type='submit') search
 
-block content
-	div(class='header-content-container')
-	div(class='content-inner')
-		div(class='row-12')
-			div(class='col-8')
-				section
-					article
-						div(class='home-search')
-							form(action='/search', accept-charset='UTF-8', method='get')
-								input(id='q', type='text', placeholder='Search...', name='search')
-								button(type='submit') Submit
-				each post, index in post_list
-					if index < 5
-						section(class='home-blog-post')
-							header
-								a(href='#') #{post.title}
-								small By #{post.author} on #{post.date}
-							article
-								div(class='image')
-									a(href='#')
-										img(src=post.image)
-								div(class='summary')
-									p #{post.summary}
-					else
-						section(class='home-blog-post home-blog-post-small')
-							header
-								a(href='#') #{post.title}
-								small by #{post.author} on #{post.date}
-							article
-								div(class='image')
-									a(href='#')
-										img(src=post.image)
-								div(class='summary')
-									p #{post.summary}
-	  

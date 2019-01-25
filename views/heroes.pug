@@ -2,14 +2,10 @@ extends layout
 
 block append head
 	link(rel='stylesheet', href='/stylesheets/heroes.css')
-
+block append header-primary
+	div(class='header-content-title')
+		h1 Heroes
 block content
-	div(class='header-content-container')
-		div(class='header-content')
-			div(class='header-content-primary')
-				div(class='header-content-title')
-					h1 Heroes
-						small All Heroes
 	div(class='content-inner')
 		section
 			header All Heroes
@@ -17,7 +13,7 @@ block content
 				div(class='hero-grid')
 					each val in hero_list
 						a(href=val.url)
-							div(class='hero', style='background: url(' + val.img + ') 0px 100px')
+							div(class='hero', style='background: url(' + val.img + ')')
 								div(class='name') #{val.modifiedName}
 								div(class='mask')
 								div(class='notes')

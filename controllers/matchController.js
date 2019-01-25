@@ -203,7 +203,7 @@ exports.match_detail = function(req, res) {
 		},
 
 	}, function (err, results) {
-		res.render('match_detail', {title: 'test', match: results.matchdetail, matchTotal: results.matchTotal});
+		res.render('match_detail', {title: 'test', match: results.matchdetail, matchTotal: results.matchTotal, chartData: JSON.stringify(results.matchTotal)});
 	});
 };
 

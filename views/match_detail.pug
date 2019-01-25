@@ -2,33 +2,47 @@ extends layout
 
 block append head
 	link(rel='stylesheet', href='/stylesheets/match_detail.css')
+block append header-primary
+	div(class='header-content-title')
+		h1 Match #{match[0].id}
+		small #{match[0].date.substring(0, 10)}
+		small #{match[0].date.substring(11, 19)}
 block content
-	if match[0].seconds < 10
-		- var seconds = "0".concat(match[0].seconds.toString())
-	div(class='header-content-container')
-		div(class='header-content')
-			div(class='header-content-primary')
-				div(class='header-content-title')
-					h1 Match #{match[0].id}
-					small Overview
-			div(class='header-content-secondary')
-				dl
-					dd #{match[0].gameMode}
-					dt Game Mode
-				dl
-					dd #{match[0].region}
-					dt Region
-				dl
-					if match[0].seconds < 10
-						dd #{match[0].minutes}:#{seconds}
-					else
-						dd #{match[0].minutes}:#{match[0].seconds}
-					dt Duration
-				dl
-					dd #{match[0].date}
-					dt Date
-	div(class='content-inner')
-		div(class='row-12')
+	div(class='row')
+		div(class='col-sm-4')
+			section
+				article
+					dl
+						dt Game Mode
+						dd #{match[0].gameMode}
+		div(class='col-sm-4')
+			section
+				article
+					dl
+						dt Region
+						dd #{match[0].region}
+		div(class='col-sm-4')
+			section
+				article
+					dl
+						dt Duration
+						if match[0].seconds < 10
+							dd #{match[0].minutes}:#{seconds}
+						else
+							dd #{match[0].minutes}:#{match[0].seconds}
+	div(class='row')
+		div(class='col-sm-6')
+			div(class='chart section-container')
+				section(class='roster-spread')
+					article
+						canvas(id='rosterSpread')
+		div(class='col-sm-6')
+			div(class='chart section-container')
+				section(class='networth-graph')
+					article
+						canvas(id='networth')
+	div(class='row')
+		div(class='col-sm-12')
 			div(class='match-result')
 				each roster in matchTotal
 					if roster.stats.winner == 'true' && roster._id == 'right/red'
@@ -48,9 +62,9 @@ block content
 						h1(class='team-header blue') Blue
 					article(class='r-tabbed-table')
 						div(class='r-tab-buttons r-only-mobile')
-							button(class='r-tab-button overview active', data-target='r-group-1', onclick="openTab(event,'r-group-1')") Overview
+							button(class='r-tab-button overview active', data-target='r-group-1', onclick="openTab(event, 'r-group-1')") Overview
 							button(class='r-tab-button farm', data-target='r-group-2', onclick="openTab(event, 'r-group-2')") Farm
-							button(class='r-tab-button items', data-target='r-group-3', onclick="openTab(event,'r-group-3')") Items
+							button(class='r-tab-button items', data-target='r-group-3', onclick="openTab(event, 'r-group-3')") Items
 						table(class='match-team-table r-tab-enabled fixed row-hints hints')
 							thead
 								tr(class='hints')
@@ -68,8 +82,52 @@ block content
 								each player in match
 									if player.side == "left/blue"
 										tr(class='hints faction-blue')
-											td(class="cell-fill-image")
-												a(href="/heroes/" + player.heroName.replace(/\*/g, "").toLowerCase())
+											td(class='cell-fill-image')
+												a(href='/heroes/' + player.heroName.replace(/\*/g, "").toLowerCase())
+													img(class='hero-icon' src= player.heroImage)
+											td(class="tf-pl single-lines")
+												a(href="/players/" + player.playerId) #{player.playerName}
+											td(class="tf-r r-tab r-group-1 shown") #{player.playerKills}
+											td(class="tf-r r-tab r-group-1 cell-minor shown") #{player.playerDeaths}
+											td(class="tf-r r-tab r-group-1 shown") #{player.playerAssists}
+											td(class="tf-r r-tab r-group-2 color-stat-gold shown") #{(player.goldEarned / 1000).toFixed(1)}k
+											td(class="tf-r r-tab r-group-2 cell-minor") #{player.minionKills}
+											td(class="tf-r r-tab r-group-2 cell-minor mine-captures") #{player.mineCaptures}
+											td(class="tf-r r-tab r-group-2 cell-minor turret-captures") #{player.turretCaptures}
+											td(class="tf-r r-tab r-group-3 tf-items-cell cell-major")
+												each item in player.items
+													div(class="match-item")
+														div(class="image-container image-container-item")
+															a(href='/items/' + item._id)
+																img(class='image-item image-overlay', src=item.image
+)
+				section(class='red')
+					header(style='vertical-align: middle')
+						h1(class='team-header red') Red
+					article(class='r-tabbed-table')
+						div(class='r-tab-buttons r-only-mobile')
+							button(class='r-tab-button overview active', data-target='r-group-1', onclick="openTab(event, 'r-group-1')") Overview
+							button(class='r-tab-button farm', data-target='r-group-2', onclick="openTab(event, 'r-group-2')") Farm
+							button(class='r-tab-button items', data-target='r-group-3', onclick="openTab(event, 'r-group-3')") Items
+						table(class='match-team-table r-tab-enabled fixed row-hints hints')
+							thead
+								tr(class='hints')
+									th(class='tf-hero') Hero
+									th(class='tf-a tf-pl') Player
+									th(class='tf-25 tf-r r-tab r-group-1 shown') K
+									th(class='tf-25 tf-r r-tab r-group-1 shown') D
+									th(class='tf-25 tf-r r-tab r-group-1 shown') A
+									th(class='tf-50 tf-r r-tab r-group-2 color-stat-gold shown') NET
+									th(class='tf-35 tf-r r-tab r-group-2') CS
+									th(class='tf-30 tf-r r-tab r-group-2') MINES
+									th(class='tf-45 tf-pl r-tab r-group-2') TWR
+									th(class='tf-60 tf-items r-tab r-group-3') ITEMS
+							tbody
+								each player in match
+									if player.side == "right/red"
+										tr(class='hints faction-red')
+											td(class='cell-fill-image')
+												a(href='/heroes/' + player.heroName.replace(/\*/g, "").toLowerCase())
 													img(class='hero-icon' src= player.heroImage)
 											td(class="tf-pl single-lines")
 												a(href="/players/" + player.playerId) #{player.playerName}
@@ -86,71 +144,70 @@ block content
 														div(class="image-container image-container-item")
 															a(href='/items/' + item._id)
 																img(class='image-item image-overlay', src=item.image)
-							tfoot
-								tr(class='hints')
-									td(class='exclude')
-									td(class='exclude')
-									td(class='tf-tr r-tab r-group-1') #{matchTotal[1].stats.kills}
-									td(class='tf-tr r-tab r-group-1') #{matchTotal[1].deaths}
-									td(class='tf-tr r-tab r-group-1') #{matchTotal[1].assists}
-									td(class='tf-tr r-tab r-group-2') #{(matchTotal[1].stats.gold / 1000).toFixed(1)}k
-									td(class='tf-tr r-tab r-group-2') #{matchTotal[1].creepScore}
-									td(class='tf-tr r-tab r-group-2 mine-captures') #{matchTotal[1].mines}
-									td(class='tf-tr r-tab r-group-2 turret-captures') #{matchTotal[1].stats.towers}
-									td(class='exclude')
-				section(class='red')
-					header(style='vertical-align: middle')
-						h1(class='team-header red') Red
-					article(class='r-tabbed-table')
-						table(class='match-team-table r-tab-enabled fixed row-hints hints')
-							div(class='r-tab-buttons r-only-mobile')
-								button(class='r-tab-button overview active', data-target='r-group-1', onclick="openTab(event,'r-group-1')") Overview
-								button(class='r-tab-button farm', data-target='r-group-2', onclick="openTab(event, 'r-group-2')") Farm
-								button(class='r-tab-button items', data-target='r-group-3', onclick="openTab(event,'r-group-3')") Items
-							thead
-								tr(class='hints')
-									th(class='tf-hero') Hero
-									th(class='tf-a tf-pl') Player
-									th(class='tf-25 tf-r r-tab r-group-1 shown') K
-									th(class='tf-25 tf-r r-tab r-group-1 shown') D
-									th(class='tf-25 tf-r r-tab r-group-1 shown') A
-									th(class='tf-50 tf-r r-tab r-group-2 color-stat-gold shown') NET
-									th(class='tf-35 tf-r r-tab r-group-2') CS
-									th(class='tf-30 tf-r r-tab r-group-2') MINES
-									th(class='tf-45 tf-towers r-tab r-group-2') TWR
-									th(class='tf-60 tf-items r-tab r-group-3') ITEMS
-							tbody
-								each player in match
-									if player.side == "right/red"
-										tr(class='hints faction-red')
-											td(class="cell-fill-image")
-												a(href="/heroes/" + player.heroName.replace(/\*/g, "").toLowerCase())
-													img(class='hero-icon', src=player.heroImage)
-											td(class="tf-pl single-lines")
-												a(href="/players/" + player.playerId) #{player.playerName}
-											td(class="tf-r r-tab r-group-1 shown") #{player.playerKills}
-											td(class="tf-r r-tab r-group-1 cell-minor shown") #{player.playerDeaths}
-											td(class="tf-r r-tab r-group-1 shown") #{player.playerAssists}
-											td(class="tf-r r-tab r-group-2 color-stat-gold shown") #{(player.goldEarned / 1000).toFixed(1)}k
-											td(class="tf-r r-tab r-group-2 cell-minor creep-score") #{player.minionKills}
-											td(class="tf-r r-tab r-group-2 cell-minor mine-captures") #{player.mineCaptures}
-											td(class="tf-r r-tab r-group-2 cell-minor turret-captures") #{player.turretCaptures}
-											td(class="tf-r r-tab r-group-3 tf-items-cell cell-major")
-												each item in player.items
-													div(class="match-item")
-														div(class="image-container image-container-item")
-															a(href='/items/' + item._id)
-																img(class='image-item image-overlay', src=item.image)
-							tfoot
-								tr(class='hints')
-									td(class='exclude')
-									td(class='exclude')
-									td(class='tf-tr r-tab r-group-1') #{matchTotal[0].stats.kills}
-									td(class='tf-tr r-tab r-group-1') #{matchTotal[0].deaths}
-									td(class='tf-tr r-tab r-group-1') #{matchTotal[0].assists}
-									td(class='tf-tr r-tab r-group-2') #{(matchTotal[0].stats.gold / 1000).toFixed(1)}k
-									td(class='tf-tr r-tab r-group-2') #{matchTotal[0].creepScore}
-									td(class='tf-tr r-tab r-group-2 mine-captures') #{matchTotal[1].mines}
-									td(class='tf-tr r-tab r-group-2 turret-captures') #{matchTotal[1].stats.towers}
-									td(class='exclude')
 		script(src='/javascripts/matchTab.js')
+		script(src='/scripts/Chart.js')
+		script.
+			var category = ["Minion Kills", "Assists", "Deaths", "Kills", "Tower Kills"];
+			var blueData = [];
+			var redData = [];
+			var blueNet = [];
+			var redNet = [];
+			!{chartData}.forEach(function(element) {
+				if(element._id == "left/blue") {
+					blueData.push((element.creepScore)/10, element.assists, element.deaths, element.stats.kills, (element.stats.towers) * 5);
+					blueNet.push(element.stats.gold);
+				}
+				if(element._id == "right/red") {
+					redData.push((element.creepScore)/10, element.assists, element.deaths, element.stats.kills, (element.stats.towers) * 5);
+					redNet.push(element.stats.gold);
+				}	
+			});
+			var ctx = document.getElementById('rosterSpread')
+			var myRadarChart = new Chart(ctx, {
+				type: 'radar',
+				data: {
+					labels: category,
+					datasets: [{
+						label: 'Team Blue',
+						data: blueData,
+						borderColor: '#20c2ea',
+						backgroundColor: 'rgba(32,194,234,0.4)'
+					},
+					{
+						label: 'Team Red',
+						data: redData,
+						borderColor: '#e84017',
+						backgroundColor: 'rgba(232,64,23,0.4)'
+					}]
+				},
+				options: {
+					scale: {
+						ticks: {
+							display: false
+						}
+					}
+				}
+			})
+
+			var xtx = document.getElementById('networth');
+			var myBarChart = new Chart(xtx, {
+				type: 'bar',
+				data: {
+					labels: ['Team Blue', 'Team Red'],
+					datasets: [{
+						label: 'Net Gold Earned',
+						data: [blueNet, redNet],
+						borderColor: ['#20c2ea', '#e84017'],
+						backgroundColor: ['rgba(32,194,234,0.4)', 'rgba(232,64,23)']
+					}]
+				},
+				options: {
+					scales: {
+						yAxes: [{
+							ticks: {
+								beginAtZero: true
+							}
+						}]
+					}
+				}
+			})

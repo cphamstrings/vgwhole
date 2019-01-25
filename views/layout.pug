@@ -1,77 +1,38 @@
-doctype html
+<!DOCTYPE html>
 html(lang='en')
 	head
 		block head
 			title= title
 			meta(charset='utf-8')
-			meta(name='viewport', content='width=device-width, initial-scale=1')
-			link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css')
-			link(rel='stylesheet', href='/stylesheets/style.css')
+			meta(name='viewport', content='width=device-width', initial-scale='1')
+			link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css", integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS", crossorigin="anonymous")
+			link(rel='stylesheet', href='/stylesheets/layout.css')
 	body
 		div(class='outer-container')
-			div(class='navbar-primary')
+			nav(class='navbar navbar-expand-sm navbar-dark navbar-primary')
 				div(class='header')
-					a(href='/') LOGO
-					a(href='javascript:void(0);', class='icon', onclick='expandHamburger()')
-						i(class='fa fa-bars')
-				div(class='header-nav-left', id='myTopNav')
-					ul
-						li
-							a(class='color-heroes', data-target='navbar-secondary-heroes', href='/heroes') Heroes	
-						li
-							a(class='color-items', data-target='navbar-secondary-items', href='/items') Items
-						li
-							a(class='color-players', data-target='navbar-secondary-players', href='/players') Players
-						li
-							a(class='color-matches', data-target='navbar-secondary-matches', href='/matches') Matches
-				div(class='header-nav-right')
-					ul
-						li
-							a(href='#') Item
-						li
-							a(href='#') Item
-						li
-							a(href='#') Item
-			div(id='navbar-secondary-heroes', class='navbar-secondary')
-				div(class='container-inner')
-					nav(class='header-nav-links toggled')
-						ul
-							li
-								a(href='#') Item
-							li
-								a(href='#') Item
-							li
-								a(href='#') Item
-			div(id='navbar-secondary-items', class='navbar-secondary')
-				div(class='container-inner')
-					nav(class='header-nav-links toggled')
-						ul
-							li
-								a(href='#') Item
-							li
-								a(href='#') Item
-							li
-								a(href='#') Item
-			div(id='navbar-secondary-players', class='navbar-secondary')
-				div(class='container-inner')
-					nav(class='header-nav-links toggled')
-						ul
-							li
-								a(href='#') Item
-							li
-								a(href='#') Item
-							li
-								a(href='#') Item
-			div(id='navbar-secondary-matches', class='navbar-secondary')
-				div(class='container-inner')
-					nav(class='header-nav-links toggled')
-						ul
-							li
-								a(href='#') Item
-							li
-								a(href='#') Item
-							li
-								a(href='#') Item
-			div(class='container-inner')
+					button(class='navbar-toggler', type='button', data-toggle='collapse', data-target='#collapsibleNavbar')
+						span(class='navbar-toggler-icon')
+					a(class='navbar-brand', href='/') VGwhole
+				div(class='collapse navbar-collapse', id='collapsibleNavbar')
+					ul(class='navbar-nav')
+						li(class='nav-item')
+							a(class='nav-link', href='#') Link
+						li(class='nav-item')
+							a(class='nav-link', href='#') Link
+						li(class='nav-item')
+							a(class='nav-link', href='#') Link
+						li(class='nav-item')
+							a(class='nav-link', href='#') Link
+			div(class='inner-container')
+				block header
+					div(class='header-content-container')
+						div(class='header-content')
+							div(class='header-content-primary')
+								block header-primary
+							div(class='header-content-secondary')
+								block header-secondary
 				block content
-		script(src='/javascripts/expandmenu.js')
+		script(src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous")
+		script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous")
+		script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous")

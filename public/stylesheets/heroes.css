@@ -2,10 +2,6 @@
 	box-sizing: border-box;	
 }
 
-.header-content {
-	padding: 8px;
-	background: #2E3740;
-}
 
 .header-content-container {
 	border-radius: 1px;
@@ -78,6 +74,8 @@ section > footer {
 	width: 25%;
 	height: 64px;
 	background-size: cover
+	!important;
+	background-position: 100% 30%
 	!important;
 	position: relative;
 	margin: auto;
