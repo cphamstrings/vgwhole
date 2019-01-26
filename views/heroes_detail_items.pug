@@ -1,41 +1,30 @@
 extends layout
 
 block append head
-	link(rel='stylesheet', href='/stylesheets/heroes_detail_items.css')
+	link(rel='stylesheet', href='/stylesheets/heroes_detail.css')
+block append header-primary
+	div(class='header-content-avatar')
+		div(class='image-container image-container-avatar image-container-hero')
+			img(class='image-avatar', src=overview[0].image)
+	div(class='header-content-title')
+		h1 #{overview[0].name.replace(/\*/g, '')}
+		small Items
 block content
-	div(class='header-content-container')
-		div(class='header-content')
-			div(class='header-content-primary')
-				div(class='header-content-avatar')
-					div(class='image-container image-container-avatar image-container-hero')
-						a(href='#')
-							img(class='image-avatar image-item', src=overview[0].image)
-				div(class='header-content-title')
-					h1 #{overview[0].name.replace(/\*/g, '')}
-					small Items
-				div(class='header-content-secondary')
-					dl
-						dd #{overview[0].winrate}%
-						dt Win Rate
-					dl
-						dd #{overview[0].popularity}
-						dt Popularity
-					div(class='hero-secondary-ability-icons r-none-mobile')
-		div(class='header-content-nav-container')
-			div(class='header-content-nav')
-				nav(class='header-nav-links')
-					ul
-						li(class='')
-							a(href='#') Overview
-						li(class='')
-							a(href='#') Abilities
-						li(class='active')
-							a(href='#') Items
-						li(class='')
-							a(href='#') Players
+	div(class='header-content-nav-container')
+		div(class='header-content-nav')
+			nav(class='header-nav-links')
+				ul
+					li(class='')
+						a(href='/heroes/' + overview[0].name.replace(/\*/g, '')) Overview
+					li(class='')
+						a(href='/heroes/' + overview[0].name.replace(/\*/g, '') + '/abilities') Abilities
+					li(class='active')
+						a(href='#') Items
+					li(class='')
+						a(href='/heroes/' + overview[0].name.replace(/\*/g, '') + '/players') Players
 	div(class='content-inner')
-		div(class='row-12')
-			div(class='col-8')
+		div(class='row')
+			div(class='col-sm-12')
 				div(class='most-used-items section-container')
 					section(class='most-used')
 						header Most Used Items
@@ -51,10 +40,10 @@ block content
 								tbody
 									each item in items
 										tr
-											td(class='cell-icon')
+											td(class='cell-icon-item')
 												a(href='#')
-													img(class='item-icon', src=item.image)
+													img(class='item-icon image-item', src=item.image)
 											td #{item.name}
 											td #{item.timesUsed}
 											td #{item.wins}
-											td #{item.winrate}%
+											td #{item.winrate.toFixed(2)}%

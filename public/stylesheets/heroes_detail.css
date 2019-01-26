@@ -1,81 +1,47 @@
 a {
 	text-decoration: none;
-	color: #A9CF54;
+	color: #E0962D;
 }
 
-.container-inner {
-	font-size: 0px;
-	margin: auto;
-	position: relative;
-	max-width: 972px;
-	background-color: #1C242D;
-	padding: 0px 0;
-	border: 0;
+.row {
+	padding: 10px;
 }
 
 .header-content-container {
-	margin-top: 20px;
+	margin-bottom: 0px;
+}
+
+.header-content-title {
+	padding-top: 8px;
+	display: inline-block;
+	vertical-align: top;
 }
 
 .header-content-avatar {
 	display: inline-block;
-	margin-right: 5px;
+}
+
+.image-container {
+	margin-right: 7px;
+	margin-top: 4px;
+	position: relative;
 }
 
 .image-avatar {
+	margin-top: 8px;
 	object-fit: cover;
 	height: 45px;
 	width: 90px;
 	object-position: 100% 30%;
 }
 
-.header-content-title {
-	display: inline-block;
-}
-
-.header-content-primary {
-	display: inline-block;
-}
-
-.header-content-secondary {
-	display: inline-block;
-	position: absolute;
-	top: 10px;
-	right: 8px;
-	margin-top: 0px;
-}
-
-.header-content-secondary dl  {
-	display: inline-block;
-	margin: 5px 12px 14px 0;
-	vertical-align: top;
-	color: white;
-	font-size: 14px;
-}
-
-.header-content-secondary dl > dd {
-	color: white;
-	font-size: 14px;
-}
-
-.header-content-secondary dl > dt {
-	color: rgba(255,255,255,0.6);
-	font-size: 12px;
-	margin-top: 4px;
-	text-transform: uppercase;
-}
-
-.hero-secondary-ability-icons img {
-	height: 40px;
-}
-
 .header-content-nav-container {
 	height: 31px;
+	margin-bottom: 12px;
 }
 
 .header-content-nav {
 	height: 100%;
-	background: #2E3740;
 	position: relative;
 	font-size: 14px;
 }
@@ -83,7 +49,7 @@ a {
 .header-nav-links {
 	height: 100%;
 	font-size: 13px;
-	background: #2a323a;
+	background: #31343d;
 }
 
 .header-nav-links ul {
@@ -97,9 +63,8 @@ a {
 }
 
 .header-nav-links ul > .active > a {
-	background: #252d34;
 	color: white;
-	border-bottom: 2px solid #ED3B1C;
+	border-bottom: 2px solid #C4C4C4;
 }
 
 .header-nav-links ul > li > a {
@@ -109,29 +74,29 @@ a {
 }
 
 header {
-	padding: 6px 4px;
-	color: white;
 	font-size: 16px;
+	color: white;
+	position: relative;
+	padding: 6px 4px;
 	text-transform: uppercase;
+	font-weight: normal;
 }
 
-article {
-	border: 1px solid #242F39;
-	border-radius: 1px;
-	background: #242F39;
-	padding: 4px;
+header > small {
+	color: rgba(255,255,255,0.6);
+	font-size: 12px;
+	margin-left: 4px;
+	text-shadow: none;
 }
 
-.chart {
-	margin-right: 8px;
+section {
+	margin-bottom: 8px;
 }
 
-.myChart {
-	background: #242F39;
-}
-
-.winrate-weekly > article {
-	padding: 8px 0 0 0;
+section > article {
+	color: #c4c4c4;
+	background: #3B3E47;
+	padding: 8px;
 }
 
 .table-content {
@@ -157,23 +122,6 @@ article {
 	background: rgba(255,255,255,0.02);
 }
 
-.image-container {
-	margin-right: 7px;
-	margin-top: 4px;
-	display: inline-block;
-	position: relative;
-}
-
-.cell-icon {
-	width: 50px;
-	padding-right: 8px;
-}
-
-.item-icon {
-
-	height: 24px;
-}
-
 .hero-icon {
 	object-fit: cover;
 	object-position: 100% 30%;
@@ -181,6 +129,14 @@ article {
 	width: 48px;
 }
 
-@media only screen and (min-width: 990px) {
-	
+.cell-icon {
+	width: 54px;
+}
+
+.cell-icon-item {
+	width: 34px;
+}
+
+.image-item {
+	height: 28px;
 }

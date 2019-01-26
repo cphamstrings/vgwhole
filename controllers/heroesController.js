@@ -964,7 +964,7 @@ exports.hero_detail_players = function(req, res, next) {
 						"kda": 1,
 						"played": 1,
 						"tier": 1,
-						winrate: {$divide: ["$wins", "$played"] }
+						winrate: {$multiply: [ 100,  {$divide: ["$wins", "$played"] } ] }
 					}
 				},
 

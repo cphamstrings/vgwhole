@@ -2,15 +2,12 @@ extends layout
 
 block append head
 	link(rel='stylesheet', href='stylesheets/items.css')
-
+block append header-primary
+	div(class='header-content-title')
+		h1 Items
+		small Most Used
 block content
-	div(class='header-content-container')
-		div(class='header-content')
-			div(class='header-content-primary')
-				div(class='header-content-title')
-					h1 Items
-						small Most Used, This Month
-	div(class='content-inner')
+	div(class='inner-content')
 		section
 			article
 				table(class='sortable')

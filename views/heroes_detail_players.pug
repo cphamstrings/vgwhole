@@ -1,43 +1,30 @@
 extends layout
 
 block append head
-	link(rel='stylesheet', href='/stylesheets/heroes_detail_players.css')
+	link(rel='stylesheet', href='/stylesheets/heroes_detail.css')
+block append header-primary
+	div(class='header-content-avatar')
+		div(class='image-container image-container-avatar image-container-hero')
+			img(class='image-avatar', src=overview[0].image)
+	div(class='header-content-title')
+		h1 #{overview[0].name.replace(/\*/g, '')}
+		small Players
 block content
-	div(class='header-content-container')
-		div(class='header-content')
-			div(class='header-content-primary')
-				div(class='header-content-avatar')
-					div(class='image-container image-container-avatar image-container-hero')
-						a(href='#')
-							img(class='image-avatar', src=overview[0].image)
-				div(class='header-content-title')
-					h1 #{overview[0].name.replace(/\*/g, '')}
-					small Players
-			div(class='header-content-secondary')
-				dl
-					dd #{overview[0].winrate}%
-					dt Win Rate
-				dl
-					dd #{overview[0].popularity}
-					dt Popularity
-				div(class='hero-secondary-ability-icons r-none-mobile')
-					each ability in overview[0].abilities
-						img(src=ability)
-		div(class='header-content-nav-container')
-			div(class='header-content-nav')
-				nav(class='header-nav-links')
-					ul
-						li(class='')
-							a(href='') Overview
-						li(class='')
-							a(href='#') Abilities
-						li(class='')
-							a(href='#') Items
-						li(class='active')
-							a(href='#') Players
+	div(class='header-content-nav-container')
+		div(class='header-content-nav')
+			nav(class='header-nav-links')
+				ul
+					li(class='')
+						a(href='/heroes/' + overview[0].name.replace(/\*/g, '')) Overview
+					li(class='')
+						a(href='/heroes/' + overview[0].name.replace(/\*/g, '') + '/abilities') Abilities
+					li(class='')
+						a(href='/heroes/' + overview[0].name.replace(/\*/g, '') + '/items') Items
+					li(class='active')
+						a(href='/heroes/' + overview[0].name.replace(/\*/g, '') + '/players') Players
 	div(class='content-inner')
-		div(class='row-12')
-			div(class='col-8')
+		div(class='row')
+			div(class='col-sm-12')
 				div(class='section-container')
 					section(class='players')
 						article
@@ -54,6 +41,6 @@ block content
 										tr
 											td #{player.name}
 											td #{player.tier}
-											td #{player.winrate}%
+											td #{player.winrate.toFixed(2)}%
 											td #{player.played}
-											td #{player.kda}
+											td #{player.kda.toFixed(2)}

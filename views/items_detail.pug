@@ -2,28 +2,15 @@ extends layout
 
 block append head
 	link(rel='stylesheet', href='/stylesheets/items_detail.css')
-
+block append header-primary
+	div(class='image-container image-container-avatar image-container-item')
+		img(class='image-avatar image-item', src=itemDetail[0].image)
+	div(class='header-content-title')
+		h1 #{itemDetail[0].name}
 block content
-
-	div(class='header-content-container')
-		div(class='header-content')
-			div(class='header-content-primary')
-				div(class='header-content-avatar')
-					div(class='image-container image-container-avatar image-container-item')
-						a(href="#")
-							img(class='image-avatar image-item', src=itemDetail[0].image)
-				div(class='header-content-title')
-					h1 #{itemDetail[0].name}
-			div(class='header-content-secondary')
-				dl
-					dd #{popularity[0].popularity}
-					dt Popularity
-				dl
-					dd #{popularity[0].winrate.toFixed(2)}%
-					dt Win Rate
-	div(class='content-inner')
-		div(class='row-12')
-			div(class='col-4')
+	div(class='inner-content')
+		div(class='row')
+			div(class='col-md-4')
 				div(class='portable-details-default')
 					section(class='item-details')
 						header Item Details
@@ -86,7 +73,7 @@ block content
 																	img(class='image-item-tooltip', src=item.image)
 														div(class='cost')
 															span(class='number-build') #{item.price}
-			div(class='col-8')
+			div(class='col-md-8')
 				div(class='most-used-heroes section-container')
 					section(class='most-used')
 						header Most Used by Heroes

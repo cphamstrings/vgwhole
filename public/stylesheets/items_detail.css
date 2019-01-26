@@ -4,7 +4,11 @@
 
 a {
 	text-decoration: none;
-	color: #92A525;
+	color: rgb(224, 150, 45);
+}
+
+.col-md-4 {
+	padding-right: 0px;
 }
 
 .header-content-primary {
@@ -37,37 +41,11 @@ a {
 	margin-top: 18px;
 }
 
-.header-content-secondary {
-	position: absolute;
-	top: 18px;
-	right: 8px;
-	margin-top: 0;
-}
-
-.header-content-secondary dl {
-	display: inline-block;	
-	margin: 5px 12px 14px 0;
-	vertical-align: top;
-}
-
-.header-content-secondary dl > dd {
-	color: white;
-	font-size: 14px;
-}
-
-.header-content-secondary dl > dt {
-	color: rgba(255,255,255,0.6);
-	font-size: 12px;
-	margin-top: 4px;
-	text-transform: uppercase;
-}
-
 header {
 	font-size: 16px;
 	color: white;
 	position: relative;
 	padding: 6px 4px;
-	text-shadow: 1px 1px 2px black;
 	text-transform: uppercase;
 	font-weight: normal;
 }
@@ -80,15 +58,16 @@ header > small {
 }
 
 section > article {
-	box-shadow: 0 0 3px rgba(10, 10, 10, 0.4);
-	border: 1px solid #242F39;
-	border-radius: 1px;
-	background: #242F39;
+	background: rgb(59,62,71);
 	padding: 4px;
 }
 
 section {
 	padding: 0 4px 0 4px;
+}
+
+.item-details article {
+	padding: 6px;
 }
 
 .item-tooltip {
@@ -97,7 +76,7 @@ section {
 }
 
 .tooltip-header {
-	background-color: rgba(46,55,64,0.9);
+	background-color: rgba(52,55,64,0.9);
 }
 
 .avatar {
@@ -141,7 +120,6 @@ section {
 .number {
 	margin-left: 5px;
 	position: relative;
-	bottom: 5px;
 
 }
 
@@ -154,8 +132,9 @@ section {
 }
 
 .description {
-	background-color: rgba(48,52,86,0.83);
-}
+	background-color: rgba(33,37,51,0.3);
+	padding: 0 4px 0 4px;
+} 
 
 .description-block {
 	padding: 5px 0 5px 0;
@@ -246,7 +225,7 @@ section {
 	text-align: left;
 }
 
-@media only screen and (min-width: 990px){
+@media only screen and (min-width: 768px){
 	.tier-category-header {
 		display: block;
 		margin-top: 0px;
