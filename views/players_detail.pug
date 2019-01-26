@@ -2,46 +2,83 @@ extends layout
 
 block append head
 	link(rel='stylesheet', href='/stylesheets/players_detail.css')
+block append header-primary
+	div(class='header-content-medal')
+		div(class='image-container image-container-medal')
+			- var tier = player[0].attributes.stats.skillTier.toString()
+			if tier == '0'
+				img(class='medal-icon', src='/images/medals/1.png')
+			else
+				img(class='medal-icon', src='/images/medals/' + tier + '.png')
+	div(class='header-content-title')
+		h1 #{player[0].attributes.name}
+		small Overview
 block content
-	div(class='header-content-container')
-		div(class='header-content')
-			div(class='header-content-primary')
-				div(class='header-content-title')
-					h1 #{player[0].attributes.name}
-					small Overview
-			div(class='header-content-secondary')
-				dl
-					dd #{player[0].attributes.stats.rankPoints.blitz.toFixed(0)}
-					dt Blitz MMR
-				dl
-					dd #{player[0].attributes.stats.rankPoints.ranked.toFixed(0)}
-					dt Ranked MMR
-				dl
-					dd #{player[0].attributes.stats.rankPoints.ranked_5v5.toFixed(0)}
-					dt Ranked 5v5 MMR
-				dl
-					dd 
-						span(class="game-record")
-							span(class="wins") #{player[0].attributes.stats.wins}
-							span(class="sep")  - 
-							span(class="losses") #{player[0].losses}
-					dt Record
-				dl
-					dd #{player[0].winRate.toFixed(2)}%
-					dt Winrate
-		div(class='header-content-nav-container')
-			div(class='header-content-nav')
-				nav(class='header-nav-links')
-					ul
-						li(class='active')
-							a(href="") Overview
-						li(class='')
-							a(href= playerid + "/matches") Matches
-						li(class='')
-							a(href= playerid + "/heroes") Heroes
-	div(class='content-inner')
-		div(class='row-12')
-			div(class='col-8')
+	div(class='header-content-nav-container')
+		div(class='header-content-nav')
+			nav(class='header-nav-links')
+				ul
+					li(class='active')
+						a(href="") Overview
+					li(class='')
+						a(href= playerid + "/matches") Matches
+					li(class='')
+						a(href= playerid + "/heroes") Heroes
+	div(class='row')
+		div(class='col-sm-4')
+			section
+				article
+					dl
+						dt Blitz MMR
+						dd #{player[0].attributes.stats.rankPoints.blitz.toFixed(0)}
+		div(class='col-sm-4')
+			section
+				article
+					dl
+						dt Ranked MMR
+						dd #{player[0].attributes.stats.rankPoints.ranked.toFixed(0)}
+		div(class='col-sm-4')
+			section
+				article
+					dl
+						dt Ranked 5v5 MMR
+						dd #{player[0].attributes.stats.rankPoints.ranked_5v5.toFixed(0)}
+	div(class='row')
+		div(class='col-sm-6')
+			section
+				article
+					dl
+						dt Record
+						dd 
+							span(class="game-record")
+								span(class="wins") #{player[0].attributes.stats.wins}
+								span(class="sep")  - 
+								span(class="losses") #{player[0].losses}
+		div(class='col-sm-6')
+			section
+				article
+					dl
+						dt Winrate
+						dd #{player[0].winRate.toFixed(2)}%
+	div(class='inner-content')
+		div(class='row')
+			div(class='col-md-4')
+				div(class='chart section-container')
+					section(class='role-distribution')
+						header Role Distribution
+						article
+							canvas(id='roleDistribution')
+				div(class='chart section-container')
+					section(class='recent-activity')
+						header Recent Activity
+						article
+							canvas(id='recentActivity')
+				div(class='chart section-container')
+					section(class='recent-winrate')
+						header Recent Win Rate
+						article
+							canvas(id='recentWinrate')
+			div(class='col-md-8')
 				div(class='most-played-heroes section-container')
 					section(class='most-played')
 						header Most Played Heroes
@@ -102,6 +139,81 @@ block content
 											else
 												td #{match.minutes}:#{match.seconds}
 											td #{match.kills}/#{match.deaths}/#{match.assists}
-											
-			div(class='col-4')
+	script(src='/scripts/Chart.js')
+	script.
+		var category = [];
+		var winrate = [];
+		var gamesPlayed = [];
+		var roles = [];
+
+		!{roleDistribution}.forEach(function(element) {
+			var carry = element.carryTotal.toString();
+			var jungler = element.junglerTotal.toString();
+			var captain = element.captainTotal.toString();
+			roles.push(carry);
+			roles.push(jungler);
+			roles.push(captain);
+		});
+
+
+		!{weekly}.forEach(function(element) {
+			var day = element._id.day.toString();
+			var month = element._id.month.toString();
+			var divider = "/";
+			var date = month.concat(divider,day);
+			category.push(date);
+			winrate.push(element.winrate);
+			gamesPlayed.push(element.total);
+		});
+		var ctx = document.getElementById("recentActivity");
+		var recentActivityChart = new Chart (ctx, {
+			type: 'line',
+			data: {
+				labels: category,
+				datasets: [{
+					data: gamesPlayed,
+					borderColor: '#C4C4C4',
+					backgroundColor: 'rgba(196,196,196,0.4)'
+				}],
+			},
+			options: {
+				legend: {
+					display: false
+				},
+			}
+		});
+
+		var xtx = document.getElementById("recentWinrate");
+		var recentWinrateChart = new Chart (xtx, {
+			type: 'line',
+			data: {
+				labels: category,
+				datasets: [{
+					data: winrate,
+					borderColor: '#F9B02F',
+					backgroundColor: 'rgba(249,176,47,0.4)'
+				}],
+			},
+			options: {
+				legend: {
+					display: false
+				},
+			}
+		});
 		
+		var ztx = document.getElementById("roleDistribution");
+		var roleDistribution = new Chart (ztx, {
+			type: 'doughnut',
+			data: {
+				labels: ["Carry", "Jungler", "Captain"],
+				datasets: [{
+					data: roles,
+					backgroundColor: ['rgb(255,99,132)','rgb(54,162,235)','rgb(255,205,86)']
+				}],
+			},
+			options: {
+				legend: {
+					position: 'left'
+				},
+			}
+		});

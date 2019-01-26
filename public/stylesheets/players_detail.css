@@ -1,38 +1,39 @@
 a {
 	text-decoration: none;
-	color: #92A525;
+	color: #E0962D;
 }
 
-.header-content-primary {
+.row {
+	padding: 10px;
+}
+
+.header-content-container {
+	margin-bottom: 0px;
+}
+
+.header-content-title {
+	padding-top: 8px;
 	display: inline-block;
-}
-
-.header-content-secondary {
-	display: block;
-}
-
-.header-content-secondary dl {
-	display: inline-block;
-	margin: 5px 12px 14px 0;
 	vertical-align: top;
-	color: white;
-	font-size: 14px;
 }
 
-.header-content-secondary dt {
-	color: rgba(255,255,255,0.6);
-	font-size: 12px;
-	margin-top: 4px;
-	text-transform: uppercase;
+.header-content-medal {
+	display: inline-block;
+	vertical-align: top;
 }
+
+.medal-icon {
+	width: 52px;
+}
+
 
 .header-content-nav-container {
 	height: 31px;
+	margin-bottom: 12px;
 }
 
 .header-content-nav {
 	height: 100%;
-	background: #2E3740;
 	position: relative;
 	font-size: 14px;
 }
@@ -40,7 +41,7 @@ a {
 .header-nav-links {
 	height: 100%;
 	font-size: 13px;
-	background: #2a323a;
+	background: #31343d;
 }
 
 .header-nav-links ul {
@@ -54,9 +55,8 @@ a {
 }
 
 .header-nav-links ul > .active > a {
-	background: #252d34;
 	color: white;
-	border-bottom: 2px solid #ED3B1C;
+	border-bottom: 2px solid #C4C4C4;
 }
 
 .header-nav-links ul > li > a {
@@ -78,7 +78,6 @@ header {
 	color: white;
 	position: relative;
 	padding: 6px 4px;
-	text-shadow: 1px 1px 2px black;
 	text-transform: uppercase;
 	font-weight: normal;
 
@@ -92,11 +91,14 @@ header > small {
 }
 
 section > article {
-	box-shadow: 0 0 3px rgba(10, 10, 10, 0.4);
-	border: 1px solid #242F39;
-	border-radius: 1px;
-	background: #242F39;
-	padding: 4px;
+	color: #c4c4c4;
+	background: #3B3E47;
+	padding: 8px;
+	margin-bottom: 20px;
+}
+
+.role-distribution article {
+	background: none;
 }
 
 .table-content {

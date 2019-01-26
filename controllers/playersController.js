@@ -195,15 +195,191 @@ exports.player_detail = function(req, res) {
 				console.log(err);
 				cb(err);
 			} else {
+				cb(null, recs);
+			}
+			})
+		},
+
+		weekly: function(cb) {
+			
+			Match.aggregate([
+
+				{
+					$project: {
+						date: {
+							$dateFromString: {
+								dateString: "$attributes.createdAt"
+							}
+						},
+						rosterid: "$relationships.rosters.data.id"
+					}
+				},
+
+				{
+					$lookup: {
+						from: "rosters",
+						localField: "rosterid",
+						foreignField: "id",
+						as: "roster_pop"
+					}
+				},
+
+				{ $unwind: "$roster_pop" },
+
+				{
+					$project: {
+						month: { $month: "$date" },
+						day: { $dayOfMonth: "$date" },
+						participantid: "$roster_pop.relationships.participants.data.id"
+					}
+				},
+
+				{
+					$lookup: {
+						from: "participants",
+						localField: "participantid",
+						foreignField: "id",
+						as: "participant_pop"
+					}
+				},
+
+				{ $unwind: "$participant_pop" },
+
+				{
+					$project: {
+						"month": 1,
+						"day": 1,
+						"participant_pop": 1,
+					}
+				},
+
+				{
+					$match: {
+						"participant_pop.relationships.player.data.id": req.params.id
+					}
+				},
+
+				{
+					$group: {
+						_id: { month: "$month", day: "$day" },
+						total: { $sum: 1 },
+						participants: { $addToSet: "$participant_pop" }
+					}
+				},
+
+				{ $unwind: "$participants" },
+
+				{
+					$project: {
+						won: { $cond: [{ $eq: ["$participants.attributes.stats.winner", true]}, {$sum:1}, '']},
+						"total": 1
+					}
+				},
+
+				{
+					$group: {
+						_id: "$_id",
+						wins: { $sum: "$won" },
+						total: { $addToSet: "$total" }
+					}
+				},
+
+				{ $unwind: "$total" },
+
+				{
+					$sort: { "_id.day" : 1 }
+				},
+
+				{
+					$project: {
+						winrate: { $multiply: [
+							{ $divide: ["$wins", "$total" ] },
+							100 ] },
+						"total": 1
+					}
+				}
+
+			], function (err, recs) {
+			if(err) {
+				console.log(err);
+				cb(err);
+			} else {
 				console.log(recs);
 				cb(null, recs);
 			}
 			})
+
+		},
+
+		roleDistribution: function(cb) {
+
+			Participant.aggregate([
+
+				{
+					$lookup: {
+						from: "heroes",
+						localField: "attributes.actor",
+						foreignField: "name",
+						as: "hero_pop"
+					}
+				},
+
+				{ $unwind: "$hero_pop" },
+
+				{
+					$match: {
+						"relationships.player.data.id": req.params.id
+					}
+				},
+
+				{
+					$project: {
+						role: {
+							$switch: {
+								branches: [
+									{ case: { $eq: ["$hero_pop.role", "Protector"] }, then: "captain"},
+									{ case: { $gte: ["$attributes.stats.jungleKills", "$attributes.stats.nonJungleMinionKills"] }, then: "jungler" },
+									{ case: { $gte: ["$attributes.stats.nonJungleMinionKills", "$attributes.stats.jungleKills"] }, then: "carry" }
+								]
+							}
+						}
+					}
+				},
+
+				{
+					$project: {
+						captainCount: { $cond: [{ $eq: ["$role", "captain"] }, {$sum:1}, ''] },
+						junglerCount: { $cond: [{ $eq: ["$role", "jungler"] }, {$sum:1}, ''] },
+						carryCount: { $cond: [{ $eq: ["$role", "carry"] }, {$sum:1}, ''] }
+					}
+				},
+
+				{
+					$group: {
+						_id: null,
+						carryTotal: { $sum: "$carryCount" },
+						junglerTotal: { $sum: "$junglerCount" },
+						captainTotal: { $sum: "$captainCount" }
+					}
+				}
+
+				
+
+			], function (err, recs) {
+			if(err) {
+				console.log(err);
+				cb(err);
+			} else {
+				console.log(recs);
+				cb(null, recs);
+			}
+			})
+
 		}
 	
 	}, function(err, results) {
 		if(err) {return next(err);}
-		res.render('players_detail', {title: 'test', player: results.playerdetail, playerheroes: results.playerhero, recent_matches: results.matches_recent, playerid: req.params.id});
+		res.render('players_detail', {title: 'test', player: results.playerdetail, playerheroes: results.playerhero, recent_matches: results.matches_recent, playerid: req.params.id, weekly: JSON.stringify(results.weekly), roleDistribution: JSON.stringify(results.roleDistribution)});
 	});
 
 	
@@ -301,6 +477,7 @@ exports.player_detail_matches = function(req, res) {
 							participantCreepScore: "$participant_pop.attributes.stats.farm",
 							participantMinionKills: "$participant_pop.attributes.stats.nonJungleMinionKills",
 							participantJungleKills: "$participant_pop.attributes.stats.jungleKills",
+							participantTowerKills: "$participant_pop.attributes.stats.turretCaptures",
 							won: "$participant_pop.attributes.stats.winner",
 							role: {
 								$switch: {
@@ -353,12 +530,19 @@ exports.player_detail_matches = function(req, res) {
 										
 							totalPlayed: {$sum: ["$player_pop.attributes.stats.gamesPlayed.aral", "$player_pop.attributes.stats.gamesPlayed.blitz", "$player_pop.attributes.stats.gamesPlayed.blitz_rounds", "$player_pop.attributes.stats.gamesPlayed.casual", "$player_pop.attributes.stats.gamesPlayed.casual_5v5", "$player_pop.attributes.stats.gamesPlayed.ranked", "$player_pop.attributes.stats.gamesPlayed.ranked_5v5"]},
 							losses: {$subtract: [{$sum: ["$player_pop.attributes.stats.gamesPlayed.aral", "$player_pop.attributes.stats.gamesPlayed.blitz", "$player_pop.attributes.stats.gamesPlayed.blitz_rounds", "$player_pop.attributes.stats.gamesPlayed.casual", "$player_pop.attributes.stats.gamesPlayed.casual_5v5", "$player_pop.attributes.stats.gamesPlayed.ranked", "$player_pop.attributes.stats.gamesPlayed.ranked_5v5"]} ,"$player_pop.attributes.stats.wins"] },
-							winRate: {$multiply: [{$divide : ["$player_pop.attributes.stats.wins", {$sum: ["$player_pop.attributes.stats.gamesPlayed.aral", "$player_pop.attributes.stats.gamesPlayed.blitz", "$player_pop.attributes.stats.gamesPlayed.blitz_rounds", "$player_pop.attributes.stats.gamesPlayed.casual", "$player_pop.attributes.stats.gamesPlayed.casual_5v5", "$player_pop.attributes.stats.gamesPlayed.ranked", "$player_pop.attributes.stats.gamesPlayed.ranked_5v5"]}] },100]}, 
+							winRate: {$multiply: [{$divide : ["$player_pop.attributes.stats.wins", {$sum: ["$player_pop.attributes.stats.gamesPlayed.aral", "$player_pop.attributes.stats.gamesPlayed.blitz", "$player_pop.attributes.stats.gamesPlayed.blitz_rounds", "$player_pop.attributes.stats.gamesPlayed.casual", "$player_pop.attributes.stats.gamesPlayed.casual_5v5", "$player_pop.attributes.stats.gamesPlayed.ranked", "$player_pop.attributes.stats.gamesPlayed.ranked_5v5"]}] },100]},
+							tier: "$player_pop.attributes.stats.skillTier",
 
 						},
 						captainCount: { $cond: [{ $eq: ["$participantStats.role", "captain"] }, {$sum:1}, ''] },
 						junglerCount: { $cond: [{ $eq: ["$participantStats.role", "jungler"] }, {$sum:1}, ''] },
 						carryCount: { $cond: [{ $eq: ["$participantStats.role", "carry"] }, {$sum:1}, ''] },
+						casualCount: { $cond: [{ $eq: ["$matchInfo.matchMode", "casual"] }, {$sum:1}, ''] },
+						aralCount: { $cond: [{ $eq: ["$matchInfo.matchMode", "casual_aral"] }, {$sum:1}, ''] },
+						blitzCount: { $cond: [{ $eq: ["$matchInfo.matchMode", "blitz_pvp_ranked"] }, {$sum:1}, ''] },
+						rankedCount: { $cond: [{ $eq: ["$matchInfo.matchMode", "ranked"] }, {$sum:1}, ''] },
+						v5Count: { $cond: [{ $eq: ["$matchInfo.matchMode", "5v5_pvp_casual"] }, {$sum:1}, ''] },
+						v5RankedCount: { $cond: [{ $eq: ["$matchInfo.matchMode", "5v5_pvp_ranked"] }, {$sum:1}, ''] }
 					}
 				},
 
@@ -370,10 +554,18 @@ exports.player_detail_matches = function(req, res) {
 						avgAssists: { $avg: "$participantStats.participantAssists" },
 						avgKDA: { $avg: "$participantStats.participantKDA" },
 						avgGPM: { $avg: "$participantStats.participantGoldPerMinute" },
+						avgTowers: { $avg: "$participantStats.participantTowerKills" },
+						avgMinionKills: { $avg: "$participantStats.participantMinionKills"},
 						avgDuration: { $avg: "$matchInfo.matchDuration"},
 						carryTotal: { $sum: "$carryCount"},
 						junglerTotal: {$sum: "$junglerCount"},
 						captainTotal: {$sum: "$captainCount"},
+						casualTotal: {$sum: "$casualCount"},
+						aralTotal: {$sum: "$aralCount"},
+						blitzTotal: {$sum: "$blitzCount"},
+						rankedTotal: {$sum: "$rankedCount"},
+						v5Total: {$sum: "$v5Count"},
+						v5RankedTotal: {$sum: "$v5RankedCount"},
 						matches: { $push: "$$ROOT" }
 					}
 				},
@@ -387,11 +579,21 @@ exports.player_detail_matches = function(req, res) {
 						"avgAssists": 1,
 						"avgKDA": 1,
 						"avgGPM": 1,
+						"avgMinionKills": 1,
+						"avgTowers": 1,
 						"avgDuration": 1,
 						roleTotal: {
 							carry: "$carryTotal",
 							jungler: "$junglerTotal",
 							captain: "$captainTotal"
+						},
+						modeTotal: {
+							casual_3v3: "$casualTotal",
+							aral: "$aralTotal",
+							blitz: "$blitzTotal",
+							ranked_3v3: "$rankedTotal",
+							casual_5v5: "$v5Total",
+							ranked_5v5: "$v5RankedTotal"
 						},
 						"matches": 1
 					}
@@ -402,6 +604,7 @@ exports.player_detail_matches = function(req, res) {
 				console.log(err);
 				cb(err);
 			} else {
+				console.log(recs);
 				cb(null, recs);
 			}
 			})
@@ -410,7 +613,7 @@ exports.player_detail_matches = function(req, res) {
 		
 	}, function(err, results) {
 		if(err) {return next(err);}
-		res.render('players_detail_matches', {playerid: req.params.id, matchTotals: results.totalMatches});
+		res.render('players_detail_matches', {playerid: req.params.id, matchTotals: results.totalMatches, chartData: JSON.stringify(results.totalMatches)});
 	});
 
 }
@@ -456,6 +659,7 @@ exports.player_detail_heroes = function (req, res) {
 							gamesPlayed: "$player_pop.attributes.stats.gamesPlayed",
 							rankPoints: "$player_pop.attributes.stats.rankPoints",
 							wins: "$player_pop.attributes.stats.wins",
+							tier: "$player_pop.attributes.stats.skillTier",
 										
 							totalPlayed: {$sum: ["$player_pop.attributes.stats.gamesPlayed.aral", "$player_pop.attributes.stats.gamesPlayed.blitz", "$player_pop.attributes.stats.gamesPlayed.blitz_rounds", "$player_pop.attributes.stats.gamesPlayed.casual", "$player_pop.attributes.stats.gamesPlayed.casual_5v5", "$player_pop.attributes.stats.gamesPlayed.ranked", "$player_pop.attributes.stats.gamesPlayed.ranked_5v5"]},
 							losses: {$subtract: [{$sum: ["$player_pop.attributes.stats.gamesPlayed.aral", "$player_pop.attributes.stats.gamesPlayed.blitz", "$player_pop.attributes.stats.gamesPlayed.blitz_rounds", "$player_pop.attributes.stats.gamesPlayed.casual", "$player_pop.attributes.stats.gamesPlayed.casual_5v5", "$player_pop.attributes.stats.gamesPlayed.ranked", "$player_pop.attributes.stats.gamesPlayed.ranked_5v5"]} ,"$player_pop.attributes.stats.wins"] },

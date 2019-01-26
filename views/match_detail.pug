@@ -144,70 +144,70 @@ block content
 														div(class="image-container image-container-item")
 															a(href='/items/' + item._id)
 																img(class='image-item image-overlay', src=item.image)
-		script(src='/javascripts/matchTab.js')
-		script(src='/scripts/Chart.js')
-		script.
-			var category = ["Minion Kills", "Assists", "Deaths", "Kills", "Tower Kills"];
-			var blueData = [];
-			var redData = [];
-			var blueNet = [];
-			var redNet = [];
-			!{chartData}.forEach(function(element) {
-				if(element._id == "left/blue") {
-					blueData.push((element.creepScore)/10, element.assists, element.deaths, element.stats.kills, (element.stats.towers) * 5);
-					blueNet.push(element.stats.gold);
-				}
-				if(element._id == "right/red") {
-					redData.push((element.creepScore)/10, element.assists, element.deaths, element.stats.kills, (element.stats.towers) * 5);
-					redNet.push(element.stats.gold);
-				}	
-			});
-			var ctx = document.getElementById('rosterSpread')
-			var myRadarChart = new Chart(ctx, {
-				type: 'radar',
-				data: {
-					labels: category,
-					datasets: [{
-						label: 'Team Blue',
-						data: blueData,
-						borderColor: '#20c2ea',
-						backgroundColor: 'rgba(32,194,234,0.4)'
-					},
-					{
-						label: 'Team Red',
-						data: redData,
-						borderColor: '#e84017',
-						backgroundColor: 'rgba(232,64,23,0.4)'
-					}]
+	script(src='/javascripts/matchTab.js')
+	script(src='/scripts/Chart.js')
+	script.
+		var category = ["Minion Kills", "Assists", "Deaths", "Kills", "Tower Kills"];
+		var blueData = [];
+		var redData = [];
+		var blueNet = [];
+		var redNet = [];
+		!{chartData}.forEach(function(element) {
+			if(element._id == "left/blue") {
+				blueData.push((element.creepScore)/10, element.assists, element.deaths, element.stats.kills, (element.stats.towers) * 5);
+				blueNet.push(element.stats.gold);
+			}
+			if(element._id == "right/red") {
+				redData.push((element.creepScore)/10, element.assists, element.deaths, element.stats.kills, (element.stats.towers) * 5);
+				redNet.push(element.stats.gold);
+			}	
+		});
+		var ctx = document.getElementById('rosterSpread')
+		var myRadarChart = new Chart(ctx, {
+			type: 'radar',
+			data: {
+				labels: category,
+				datasets: [{
+					label: 'Team Blue',
+					data: blueData,
+					borderColor: '#20c2ea',
+					backgroundColor: 'rgba(32,194,234,0.4)'
 				},
-				options: {
-					scale: {
-						ticks: {
-							display: false
-						}
+				{
+					label: 'Team Red',
+					data: redData,
+					borderColor: '#e84017',
+					backgroundColor: 'rgba(232,64,23,0.4)'
+				}]
+			},
+			options: {
+				scale: {
+					ticks: {
+						display: false
 					}
 				}
-			})
+			}
+		})
 
-			var xtx = document.getElementById('networth');
-			var myBarChart = new Chart(xtx, {
-				type: 'bar',
-				data: {
-					labels: ['Team Blue', 'Team Red'],
-					datasets: [{
-						label: 'Net Gold Earned',
-						data: [blueNet, redNet],
-						borderColor: ['#20c2ea', '#e84017'],
-						backgroundColor: ['rgba(32,194,234,0.4)', 'rgba(232,64,23)']
+		var xtx = document.getElementById('networth');
+		var myBarChart = new Chart(xtx, {
+			type: 'bar',
+			data: {
+				labels: ['Team Blue', 'Team Red'],
+				datasets: [{
+					label: 'Net Gold Earned',
+					data: [blueNet, redNet],
+					borderColor: ['#20c2ea', '#e84017'],
+					backgroundColor: ['rgba(32,194,234,0.4)', 'rgba(232,64,23)']
+				}]
+			},
+			options: {
+				scales: {
+					yAxes: [{
+						ticks: {
+							beginAtZero: true
+						}
 					}]
-				},
-				options: {
-					scales: {
-						yAxes: [{
-							ticks: {
-								beginAtZero: true
-							}
-						}]
-					}
 				}
-			})
+			}
+		})
