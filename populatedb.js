@@ -4,7 +4,7 @@ var options = {
 	protocol: "https:",
 	hostname: "api.dc01.gamelockerapp.com",
 	port: 443,
-	path: "/shards/na/matches",
+	path: "/shards/na/matches?filter[createdAt-start]=2019-01-26T13:25:30Z",
 	method: "GET",
 	headers: { "Accept" : "application/vnd.api+json",
 		   "Authorization" : "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIzNjMwZjcwMC1iMjEzLTAxMzUtMTFiNS0wYTU4NjQ2MGE3MDciLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNTExMzk2OTM0LCJwdWIiOiJzZW1jIiwidGl0bGUiOiJ2YWluZ2xvcnkiLCJhcHAiOiJ2YWluZ2xvcnl3aG9sZSIsInNjb3BlIjoiY29tbXVuaXR5IiwibGltaXQiOjEwfQ.aT3Dgug-Ie58huOcwkdwkryLRQc4sH_d1ggUElaR7Tw"
@@ -26,7 +26,7 @@ const req = https.request(options, (res) => {
 		var parsed = JSON.parse(data);
 		var included = parsed.included;
 		var item = parsed.data;
-		var players = included.filter(function(k) {
+		var player = included.filter(function(k) {
 			return k.type=="player";
 		});
 		var participants = included.filter(function(k) {
@@ -43,10 +43,11 @@ const req = https.request(options, (res) => {
 				console.log("Number of documents matches: " + res.insertedCount);
 				client.close();
 			});
-			db.collection("players").insert(players, function(err, res) {
-				if (err) throw err;
-				console.log("Number of players inserted: " + res.insertedCount);
-				client.close();
+			player.forEach(function(element) {
+				db.collection("players").update({ id: element.id }, element, { upsert: true}, function(err,res) {
+					if (err) throw err;
+					client.close();
+				});
 			});
 			db.collection("participants").insert(participants, function(err, res) {
 				if (err) throw err;

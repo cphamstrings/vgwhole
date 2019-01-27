@@ -99,6 +99,18 @@ section > article {
 	padding: 8px;
 }
 
+.stat-spread article {
+	background: none;
+}
+
+.chart {
+	margin-bottom: 25px;
+}
+
+.role-distribution article {
+	background: none;
+}
+
 .table-content {
 	color: white;
 	padding-top: 0;

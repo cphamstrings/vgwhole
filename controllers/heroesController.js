@@ -21,112 +21,19 @@ exports.heroes_list = function(req, res, next) {
 exports.hero_detail = function(req, res, next) {
 	async.parallel({
 		heroesOverview: function(cb) {
-			Participant.aggregate([
-				
-				{
-					$lookup: {
-						from: "heroes",
-						localField: "attributes.actor",
-						foreignField: "name",
-						as: "hero_pop"
-					}
-				},
-
-				{ $unwind: "$hero_pop" },
-	
-				{
-					$lookup: {
-						from: "abilities",
-						localField: "hero_pop.abilities",
-						foreignField: "_id",
-						as: "abilities_pop"
-					}
-				},
-
-				{
-					$project: {
-						participantInfo: {
-							items: "$attributes.stats.items",
-							won: { $cond: [{ $eq: ["$attributes.stats.winner", true]}, {$sum:1}, '']}
-						},
-
-						heroInfo : {
-							name: "$hero_pop.name",
-							image: "$hero_pop.img",
-							heroRole: "$hero_pop.role",
-							abilities: "$abilities_pop.image"
-						}
-						
-
-					}
-
-				},
-
-				{
-					$group: {
-						_id: "$heroInfo.name",
-						gamesPlayed: { $sum: 1 },
-						wins: { $sum: "$participantInfo.won" },
-						heroInfo: { $addToSet: "$heroInfo"  },
-						participantInfo: { $addToSet: "$participantInfo" }
-					}
-				},
-
-				{
-					$sort: {gamesPlayed : -1}
-				},
-
-				{
-					$group: {
-						_id: false,
-						heroes: {
-							$push: {
-								name: "$_id",
-								gamesPlayed: "$gamesPlayed",
-								wins: "$wins",
-								heroInfo: "$heroInfo",
-								participantInfo: "$participantInfo"
-							}
-						}
-					}
-				},
-
-				{
-					$unwind: {
-						path: "$heroes",
-						includeArrayIndex: "popularity"
-					}
-				},
-
-				{
-					$unwind: "$heroes.heroInfo"
-				},
-
+			Hero.aggregate([
 				{
 					$match: {
-						"heroes.name": {$regex: req.params.name, $options: 'i'}
-					}
-				},
-
-				{
-					$project: {
-						name: "$heroes.name",
-						image: "$heroes.heroInfo.image",
-						abilities: "$heroes.heroInfo.abilities",
-						winrate: { $multiply: [{ $divide: ["$heroes.wins", "$heroes.gamesPlayed"] }, 100]},
-						popularity: {$sum: ["$popularity", 1] },
-
+						"name": {$regex: req.params.name, $options: 'i'}
 					}
 				}
-
-
 
 			], function (err, recs) {
 			if(err) {
 				console.log(err);
 				cb(err);
 			} else {
-	
+				console.log(recs);	
 				cb(null, recs);
 			}
 			})
@@ -166,6 +73,7 @@ exports.hero_detail = function(req, res, next) {
 					$project: {
 						name: "$item_pop.name",
 						image: "$item_pop.image",
+						id: "$item_pop._id",
 						"won": 1,
 					}
 				},
@@ -173,17 +81,20 @@ exports.hero_detail = function(req, res, next) {
 				{
 					$group: {
 						_id: "$name",
+						id: { $addToSet: "$id" },
 						wins: {$sum: "$won" },
 						timesUsed: {$sum: 1},
 						image: { $addToSet: "$image" }
 					}
 				},
-
+				
+				{ $unwind: "$id" },
 				{ $unwind: "$image" },
 
 				{
 					$project: {
 						name: "$_id",
+						id: "$id",
 						image: "$image",
 						timesUsed: "$timesUsed",
 						wins: "$wins",
@@ -573,6 +484,11 @@ exports.hero_detail = function(req, res, next) {
 		},
 */
 		weekly: function(cb) {
+			var today = new Date(),
+				oneDay = ( 1000 * 60 * 60 * 24),
+				thirtyDays = new Date( today.valueOf() - ( 60 * oneDay) ),
+				fifteenDays = new Date( today.valueOf() - ( 15 * oneDay) ),
+				sevenDays = new Date( today.valueOf() - ( 7 * oneDay) );
 			
 			Match.aggregate([
 			
@@ -584,6 +500,12 @@ exports.hero_detail = function(req, res, next) {
 							}
 						},
 						rosterid: "$relationships.rosters.data.id"
+					}
+				},
+
+				{
+					$match: {
+						"date": { $gte: sevenDays }
 					}
 				},
 
@@ -689,16 +611,109 @@ exports.hero_detail = function(req, res, next) {
 				console.log(err);
 				cb(err);
 			} else {
-				console.log(recs);
 				cb(null, recs);
 			}
 			})
 
 		},
 
+		statSpread: function(cb) {
+			Participant.aggregate([
+			
+				{
+					$match: {
+						"attributes.actor": {$regex: req.params.name, $options: 'i'}
+
+					}
+				},
+
+				{
+					$group: {
+						_id: null,
+						avgKills: { $avg: "$attributes.stats.kills" },
+						avgDeaths: { $avg: "$attributes.stats.deaths" },
+						avgAssists: { $avg: "$attributes.stats.assists" },
+						avgTowerKills: { $avg: "$attributes.stats.turretCaptures" },
+						avgMinionKills: { $avg: "$attributes.stats.minionKills"}
+					}
+				}
+
+			], function(err, recs) {
+			if(err) {
+				console.log(err);
+				cb(err);
+			} else {
+				cb(null, recs);
+			}
+			})
+		},
+
+		roleDistribution: function(cb) {
+			Participant.aggregate([
+				
+				{
+					$match: {
+						"attributes.actor": {$regex: req.params.name, $options: 'i'}
+					}
+				},
+
+				{
+					$lookup: {
+						from: "heroes",
+						localField: "attributes.actor",
+						foreignField: "name",
+						as: "hero_pop"
+					}
+				},
+
+				{ $unwind: "$hero_pop"},
+
+				{
+					$project: {
+						role: {
+							$switch: {
+								branches: [
+									{ case: { $eq: ["$hero_pop.role", "Protector"] }, then: "captain"},
+									{ case: { $gte: ["$attributes.stats.jungleKills", "$attributes.stats.nonJungleMinionKills"] }, then: "jungler" },
+									{ case: { $gte: ["$attributes.stats.nonJungleMinionKills", "$attributes.stats.jungleKills"] }, then: "carry" }
+								],
+								default: "captain"
+							}
+						}
+					}
+				},
+
+				{
+					$project: {
+						captainCount: { $cond: [{ $eq: ["$role", "captain"] }, {$sum:1}, ''] },
+						junglerCount: { $cond: [{ $eq: ["$role", "jungler"] }, {$sum:1}, ''] },
+						carryCount: { $cond: [{ $eq: ["$role", "carry"] }, {$sum:1}, ''] }
+					}
+				},
+
+				{
+					$group: {
+						_id: req.params.name,
+						captainTotal: {$sum: "$captainCount" },
+						junglerTotal: {$sum: "$junglerCount" },
+						carryTotal: {$sum: "$carryCount" }
+					}
+				}
+
+			], function(err, recs) {
+			if(err) {
+				console.log(err);
+				cb(err);
+			} else {
+				console.log(recs);
+				cb(null, recs);
+			}
+			})
+		},
+
 	}, function(err, results) {
 		if(err) {return next(err);}
-		res.render('heroes_detail', {overview: results.heroesOverview, items: results.heroesItems, matchups: results.heroesMatchup, worstVersus: results.worstVersus, weekly: JSON.stringify(results.weekly)})
+		res.render('heroes_detail', {overview: results.heroesOverview, items: results.heroesItems, matchups: results.heroesMatchup, worstVersus: results.worstVersus, weekly: JSON.stringify(results.weekly), statSpread: JSON.stringify(results.statSpread), roleDistribution: JSON.stringify(results.roleDistribution)})
 	})
 }
 
@@ -739,6 +754,7 @@ exports.hero_items = function(req, res, next) {
 				{
 					$project: {
 						name: "$item_pop.name",
+						id: "$item_pop._id",
 						image: "$item_pop.image",
 						"won": 1,
 					}
@@ -749,15 +765,18 @@ exports.hero_items = function(req, res, next) {
 						_id: "$name",
 						wins: {$sum: "$won" },
 						timesUsed: {$sum: 1},
-						image: { $addToSet: "$image" }
+						image: { $addToSet: "$image" },
+						id: { $addToSet: "$id" }
 					}
 				},
 
+				{ $unwind: "$id" },
 				{ $unwind: "$image" },
 
 				{
 					$project: {
 						name: "$_id",
+						id: "$id",
 						image: "$image",
 						timesUsed: "$timesUsed",
 						wins: "$wins",
@@ -780,105 +799,12 @@ exports.hero_items = function(req, res, next) {
 
 
 		heroOverview: function(cb) {
-			Participant.aggregate([
-				
-				{
-					$lookup: {
-						from: "heroes",
-						localField: "attributes.actor",
-						foreignField: "name",
-						as: "hero_pop"
-					}
-				},
-
-				{ $unwind: "$hero_pop" },
-	
-				{
-					$lookup: {
-						from: "abilities",
-						localField: "hero_pop.abilities",
-						foreignField: "_id",
-						as: "abilities_pop"
-					}
-				},
-
-				{
-					$project: {
-						participantInfo: {
-							items: "$attributes.stats.items",
-							won: { $cond: [{ $eq: ["$attributes.stats.winner", true]}, {$sum:1}, '']}
-						},
-
-						heroInfo : {
-							name: "$hero_pop.name",
-							image: "$hero_pop.img",
-							heroRole: "$hero_pop.role",
-							abilities: "$abilities_pop.image"
-						}
-						
-
-					}
-
-				},
-
-				{
-					$group: {
-						_id: "$heroInfo.name",
-						gamesPlayed: { $sum: 1 },
-						wins: { $sum: "$participantInfo.won" },
-						heroInfo: { $addToSet: "$heroInfo"  },
-						participantInfo: { $addToSet: "$participantInfo" }
-					}
-				},
-
-				{
-					$sort: {gamesPlayed : -1}
-				},
-
-				{
-					$group: {
-						_id: false,
-						heroes: {
-							$push: {
-								name: "$_id",
-								gamesPlayed: "$gamesPlayed",
-								wins: "$wins",
-								heroInfo: "$heroInfo",
-								participantInfo: "$participantInfo"
-							}
-						}
-					}
-				},
-
-				{
-					$unwind: {
-						path: "$heroes",
-						includeArrayIndex: "popularity"
-					}
-				},
-
-				{
-					$unwind: "$heroes.heroInfo"
-				},
-
+			Hero.aggregate([
 				{
 					$match: {
-						"heroes.name": {$regex: req.params.name, $options: 'i'}
-					}
-				},
-
-				{
-					$project: {
-						name: "$heroes.name",
-						image: "$heroes.heroInfo.image",
-						abilities: "$heroes.heroInfo.abilities",
-						winrate: { $multiply: [{ $divide: ["$heroes.wins", "$heroes.gamesPlayed"] }, 100]},
-						popularity: {$sum: ["$popularity", 1] },
-
+						"name": {$regex: req.params.name, $options: 'i'}
 					}
 				}
-
-
 
 			], function (err, recs) {
 			if(err) {
@@ -925,6 +851,7 @@ exports.hero_detail_players = function(req, res, next) {
 				{
 					$project: {
 						name: "$player_pop.attributes.name",
+						id: "$player_pop.id",
 						region: "$player_pop.attributes.shardId",
 						tier: "$player_pop.attributes.stats.skillTier",
 						won: { $cond: [{ $eq: ["$attributes.stats.winner", true]}, {$sum:1}, '']},
@@ -946,6 +873,7 @@ exports.hero_detail_players = function(req, res, next) {
 				{
 					$group: {
 						_id: "$name",
+						id: { $addToSet: "$id"},
 						wins: { $sum: "$won" },
 						kda: { $avg: "$kda" },
 						played: {$sum: 1},
@@ -956,10 +884,12 @@ exports.hero_detail_players = function(req, res, next) {
 				},
 
 				{ $unwind: "$tier" },
+				{ $unwind: "$id"},
 
 				{
 					$project: {
 						name: "$_id",
+						id: "$id",
 						"wins": 1,
 						"kda": 1,
 						"played": 1,
@@ -982,104 +912,13 @@ exports.hero_detail_players = function(req, res, next) {
 		},
 
 		heroOverview: function(cb) {
-			Participant.aggregate([
-				
-				{
-					$lookup: {
-						from: "heroes",
-						localField: "attributes.actor",
-						foreignField: "name",
-						as: "hero_pop"
-					}
-				},
-
-				{ $unwind: "$hero_pop" },
-	
-				{
-					$lookup: {
-						from: "abilities",
-						localField: "hero_pop.abilities",
-						foreignField: "_id",
-						as: "abilities_pop"
-					}
-				},
-
-				{
-					$project: {
-						participantInfo: {
-							items: "$attributes.stats.items",
-							won: { $cond: [{ $eq: ["$attributes.stats.winner", true]}, {$sum:1}, '']}
-						},
-
-						heroInfo : {
-							name: "$hero_pop.name",
-							image: "$hero_pop.img",
-							heroRole: "$hero_pop.role",
-							abilities: "$abilities_pop.image"
-						}
-						
-
-					}
-
-				},
-
-				{
-					$group: {
-						_id: "$heroInfo.name",
-						gamesPlayed: { $sum: 1 },
-						wins: { $sum: "$participantInfo.won" },
-						heroInfo: { $addToSet: "$heroInfo"  },
-						participantInfo: { $addToSet: "$participantInfo" }
-					}
-				},
-
-				{
-					$sort: {gamesPlayed : -1}
-				},
-
-				{
-					$group: {
-						_id: false,
-						heroes: {
-							$push: {
-								name: "$_id",
-								gamesPlayed: "$gamesPlayed",
-								wins: "$wins",
-								heroInfo: "$heroInfo",
-								participantInfo: "$participantInfo"
-							}
-						}
-					}
-				},
-
-				{
-					$unwind: {
-						path: "$heroes",
-						includeArrayIndex: "popularity"
-					}
-				},
-
-				{
-					$unwind: "$heroes.heroInfo"
-				},
-
+			Hero.aggregate([
 				{
 					$match: {
-						"heroes.name": {$regex: req.params.name, $options: 'i'}
-					}
-				},
-
-				{
-					$project: {
-						name: "$heroes.name",
-						image: "$heroes.heroInfo.image",
-						abilities: "$heroes.heroInfo.abilities",
-						winrate: { $multiply: [{ $divide: ["$heroes.wins", "$heroes.gamesPlayed"] }, 100]},
-						popularity: {$sum: ["$popularity", 1] },
+						"name": {$regex: req.params.name, $options: 'i'}
 
 					}
 				}
-
 
 
 			], function (err, recs) {

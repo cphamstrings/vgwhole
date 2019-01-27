@@ -1,6 +1,7 @@
 var async = require('async');
 var Participant = require('../models/participant')
 var Item = require('../models/items');
+var Match = require('../models/match');
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
 
@@ -327,15 +328,142 @@ exports.item_detail = function(req, res, next) {
 					console.log(err);
 					cb(err);
 				} else {
+					cb(null, recs);
+				}
+			})
+		},
+
+		weekly: function(cb) {
+			var today = new Date(),
+				oneDay = ( 1000 * 60 * 60 * 24),
+				thirtyDays = new Date( today.valueOf() - ( 60 * oneDay ) ),
+				fifteenDays = new Date( today.valueOf() - ( 15 * oneDay) ),
+				sevenDays = new Date( today.valueOf() - ( 7 * oneDay ) );
+			Match.aggregate([
+				
+				{
+					$project: {
+						date: {
+							$dateFromString: {
+								dateString: "$attributes.createdAt"
+							}
+						},
+						rosterid: "$relationships.rosters.data.id"
+					}
+				},
+
+				{
+					$match: {
+						"date": { $gte: sevenDays }
+					}
+				},
+
+				{
+					$lookup: {
+						from: "rosters",
+						localField: "rosterid",
+						foreignField: "id",
+						as: "roster_pop"
+					}
+				},
+
+				{ $unwind: "$roster_pop" },
+
+				{
+					$project: {
+						month: { $month: "$date" },
+						day: { $dayOfMonth: "$date"},
+						participantid: "$roster_pop.relationships.participants.data.id"
+					}
+				},
+
+				{
+					$lookup: {
+						from: "participants",
+						localField: "participantid",
+						foreignField: "id",
+						as: "participant_pop"
+					}
+				},
+				
+				{ $unwind: "$participant_pop" },
+
+				{
+					$group: {
+						_id: { month: "$month", day: "$day" },
+						total: { $sum: 1},
+						participants: { $addToSet: "$participant_pop" },
+							
+					}
+				},
+
+				{ $unwind: "$participants" },
+
+				{
+					$lookup: {
+						from: "items",
+						localField: "participants.attributes.stats.items",
+						foreignField: "name",
+						as: "item_pop"
+					}
+				},
+				
+				{ $unwind: "$item_pop" },
+
+				{
+					$match: {
+						"item_pop._id": ObjectId(req.params.id)
+					}
+				},
+
+				{ 
+					$project: {
+						won: { $cond: [{ $eq: ["$participants.attributes.stats.winner", true]}, {$sum:1}, '']},
+						"total": 1
+					}
+				},
+
+				{
+					$group: {
+						_id: "$_id",
+						used: { $sum: 1 },
+						total: { $addToSet: "$total" },
+						wins: { $sum: "$won" }
+					}
+				},
+
+				{ $unwind: "$total" },
+
+				{
+					$sort: { "_id.day" : 1 }
+				},
+
+				{
+					$project: {
+						winrate: { $multiply: [
+							{ $divide: ["$wins", "$used" ] },
+							100 ] },
+
+						pickrate: { $multiply: [
+							{ $divide: ["$used", "$total" ] },
+							100 ] }
+					}
+				}
+
+			], function(err, recs) {
+				if(err) {
+					console.log(err);
+					cb(err);
+				} else {
 					console.log(recs);
 					cb(null, recs);
 				}
 			})
-		}
+		},
 	},	
 	function(err, results) {
 		if(err) {return next(err);}
-		res.render('items_detail', {itemHero: results.itemHero, itemDetail: results.itemDetails, popularity: results.popularityWinrate});
+		res.render('items_detail', {itemHero: results.itemHero, itemDetail: results.itemDetails, popularity: results.popularityWinrate, weekly: JSON.stringify(results.weekly)});
 	});
 		
 }

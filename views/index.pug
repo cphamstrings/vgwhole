@@ -9,7 +9,7 @@ block append content
 				img(class='main-logo' src='/images/asdf.svg.png')
 			div(class='search-container')
 				div(class='home-search')
-					form(action='/search', accept-charset='UTF-8', method='get')
-						input(id='q', type='text', placehold='Search...', class='search')
-						button(type='submit') search
+					form(action='/search', accept-charset='UTF-8', method='GET')
+						input(id='q', type='text', name="q", placeholder='Players, heroes, matches, items', class='search')
+						button(type='submit') Search
 

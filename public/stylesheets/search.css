@@ -1,0 +1,89 @@
+header {
+	font-size: 16px;
+	color: white;
+	position: relative;
+	padding: 6px 4px;
+	text-transform: uppercase;
+	font-weight: normal;
+}
+
+section > article {
+	background: rgb(59,62,71);
+	padding: 4px;
+}
+
+section {
+	padding: 0 4px 0 4px;
+}
+
+.search-results h1 {
+	color: white;
+	font-size: 24px;
+	margin-bottom: 0;
+}
+
+.content-title {
+	display: inline-block;
+	vertical-align: top;
+}
+
+.content-title-player {
+	margin-top: 10px;
+}
+
+.content-title-match {
+	display: block;
+}
+
+.content-title-item {
+	margin-top: 12px;
+}
+
+.content-title small {
+	color: #c4c4c4;
+	text-transform: uppercase;
+}
+
+.image-container {
+	display: inline-block;
+	margin-right: 12px;
+	position: relative;
+	bottom: 5px;
+}
+
+.image-avatar-hero {
+	margin-top: 8px;
+	object-fit: cover;
+	width: 90px;
+	object-position: 100% 30%;
+	height: 45px;
+}
+
+.image-item {
+	padding-top: 10px;
+	height: 60px;
+}
+
+.participants {
+	margin-top: 4px;
+}
+
+.roster {
+	display: inline-block;
+	margin-right: 8px;
+}
+
+.image-container-icon {
+	display: inline-block;
+}
+
+.hero-icon {
+	object-fit: cover;
+	object-position: 100% 30%;
+	height: 24px;
+	width: 48px;
+}
+
+.medal-icon {
+	width: 52px;
+}

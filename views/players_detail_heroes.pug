@@ -43,7 +43,8 @@ block content
 									div(class='image-container image-container-hero image-container-hero-icon')
 										a(href='/heroes/' + hero.heroInfo.heroName.replace(/\*/g, '').toLowerCase())
 											img(class='image-hero image-icon' src=hero.heroInfo.heroImage)
-								td #{hero.heroInfo.heroName.replace(/\*/g, '')}
+								td 
+									a(href='/heroes/' + hero.heroInfo.heroName.replace(/\*/g, '')) #{hero.heroInfo.heroName.replace(/\*/g, '')}
 								td #{hero.gamesPlayed}
 								td #{hero.winRate.toFixed(2)}%
 								td #{hero.avgKDA.toFixed(2)}

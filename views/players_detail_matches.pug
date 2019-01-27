@@ -148,7 +148,7 @@ block content
 		var modes = [];
 
 		!{chartData}.forEach(function(element) {
-			stats.push((element.avgMinionKills)/10, element.avgAssists, element.avgDeaths, element.avgKills, element.avgTowers);
+			stats.push((element.avgMinionKills)/10, element.avgAssists, element.avgDeaths, element.avgKills, (element.avgTowers)*2);
 			roles.push(element.roleTotal.carry, element.roleTotal.jungler, element.roleTotal.captain);
 			modes.push(element.modeTotal.aral, element.modeTotal.blitz, element.modeTotal.casual_3v3, element.modeTotal.ranked_3v3, element.modeTotal.casual_5v5, element.modeTotal.ranked_5v5);
 		});

@@ -8,11 +8,13 @@ var heroes_controller = require('../controllers/heroesController');
 var blog_controller = require('../controllers/blogController');
 var test_controller = require('../controllers/testController');
 var items_controller = require('../controllers/itemController');
+var search_controller = require('../controllers/searchController');
 
 /* GET home page. */
 router.get('/', blog_controller.post_list);
 
-
+// GET request for search results.
+router.get('/search', search_controller.search);
 // GET request for test data.
 router.get('/test', test_controller.test);
 

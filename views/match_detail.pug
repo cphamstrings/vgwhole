@@ -50,12 +50,12 @@ block content
 					if roster.stats.winner == 'true' && roster._id == 'left/blue'
 						h1(class='blue-victor') BLUE VICTORY
 				div(class='match-victory-subtitle')
-					span(class='blue-score') #{matchTotal[1].stats.kills}
+					span(class='blue-score') #{matchTotal[0].stats.kills}
 					if match[0].seconds < 10
 						span(class='duration') #{match[0].minutes}:#{seconds}
 					else
 						span(class='duration') #{match[0].minutes}:#{match[0].seconds}
-					span(class='red-score') #{matchTotal[0].stats.kills}
+					span(class='red-score') #{matchTotal[1].stats.kills}
 			div(class='team-results')
 				section(class='blue')
 					header(style='vertical-align: middle')

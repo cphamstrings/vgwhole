@@ -2,10 +2,11 @@ extends layout
 
 block append head
 	link(rel='stylesheet', href='/stylesheets/heroes_detail.css')
+	link(rel='stylesheet', href='/stylesheets/heroes_detail_players.css')
 block append header-primary
 	div(class='header-content-avatar')
 		div(class='image-container image-container-avatar image-container-hero')
-			img(class='image-avatar', src=overview[0].image)
+			img(class='image-avatar', src=overview[0].img)
 	div(class='header-content-title')
 		h1 #{overview[0].name.replace(/\*/g, '')}
 		small Players
@@ -31,7 +32,7 @@ block content
 							table(class='players-list table-content')
 								thead
 									tr
-										th Player
+										th(colspan='2') Player
 										th Tier
 										th Win Rate
 										th Matches Played
@@ -39,7 +40,15 @@ block content
 								tbody
 									each player in players
 										tr
-											td #{player.name}
+											td(class='medal')
+												div(class='medal-icon medal-icon-container')
+													- var tier = player.tier.toString()
+													if tier == '0'
+														img(class='medal-icon', src='/images/medals/1.png')
+													else
+														img(class='medal-icon', src='/images/medals/' + tier + '.png')
+											td
+												a(href='/players/' + player.id) #{player.name}
 											td #{player.tier}
 											td #{player.winrate.toFixed(2)}%
 											td #{player.played}

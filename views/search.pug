@@ -1,0 +1,62 @@
+extends layout
+block append head
+	link(rel='stylesheet', href='stylesheets/search.css')
+block append header-primary
+	div(class='header-content-title')
+		h1 Search Results
+block append content
+	div(class='inner-content')
+		div(class='row')
+			each player in playerSearch
+				div(class='col-sm-6')
+					section
+						header Players
+						article(class='search-results')
+							a(href='/players/' + player.id)
+								div(class= 'image-container image-container-medal')
+									- var tier = player.attributes.stats.skillTier.toString()
+									if tier == '0'
+										img(class='medal-icon', src='/images/medals/1.png')
+									else
+										img(class='medal-icon', src='/images/medals/' + tier + '.png')
+								div(class='content-title content-title-player')
+									h1 #{player.attributes.name}
+		div(class='row')
+			each hero in heroSearch
+				div(class='col-sm-6')
+					section
+						header Heroes
+						article(class='search-results')
+							a(href='/heroes/' + hero.name.replace(/\*/g, ''))
+								div(class='image-container image-container-avatar image-container-hero')
+									img(class='image-avatar image-avatar-hero', src=hero.img)
+								div(class='content-title')
+									h1 #{hero.name.replace(/\*/g, '')}
+									small #{hero.role}
+		div(class='row')
+			each match in matchSearch
+				div(class='col-sm-12')
+					section
+						header Matches
+						article(class='search-results')
+							a(href='/matches/' + match.id)
+								div(class='content-title content-title-match')
+									h1 Match #{match.id}
+									small #{match.attributes.createdAt} #{match.attributes.gameMode} #{match.attributes.shardId}
+								div(class='participants')
+									each roster in rosterSearch
+										div(class='roster')
+											each hero in roster.heroes
+												div(class='image-container-icon')
+													img(src=hero.img, class='hero-icon')
+		div(class='row')
+			each item in itemSearch
+				div(class='col-sm-6')
+					section
+						header Items
+						article(class='search-results')
+							a(href='/items/' + item._id)
+								div(class='image-container image-container-item')
+									img(class='image-item image-avatar', src=item.image)
+								div(class='content-title-item content-title')
+									h1 #{item.name}

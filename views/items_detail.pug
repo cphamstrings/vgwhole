@@ -10,6 +10,21 @@ block append header-primary
 block content
 	div(class='inner-content')
 		div(class='row')
+			div(class='col-sm-6')
+				div(class='chart section-container')
+					section(class='win-rate')
+						header Win Rate
+							small This Week
+						article
+							canvas(id='winRate')
+			div(class='col-sm-6')
+				div(class='chart section-container')
+					section(class='pick-rate')
+						header Pick Rate
+							small This Week
+						article
+							canvas(id='pickRate')
+		div(class='row')
 			div(class='col-md-4')
 				div(class='portable-details-default')
 					section(class='item-details')
@@ -97,3 +112,54 @@ block content
 											td #{hero.used}
 											td #{hero.won}
 											td #{hero.winrate.toFixed(2)}%
+	script(src='/scripts/Chart.js')
+	script.
+		var category = [];
+		var winrate = [];
+		var pickrate = [];
+		!{weekly}.forEach(function(element) {
+			var day = element._id.day.toString();
+			var month = element._id.month.toString();
+			var divider = "/";
+			var date = month.concat(divider,day);
+			category.push(date);
+			winrate.push(element.winrate);
+			pickrate.push(element.pickrate);
+		
+		});
+
+		var ctx = document.getElementById("winRate");
+		var winRateChart = new Chart (ctx, {
+			type: 'line',
+			data: {
+				labels: category,
+				datasets: [{
+					data: winrate,
+					borderColor: '#F9B02F',
+					backgroundColor: 'rgba(249,176,47,0.4)'
+				}],
+			},
+			options: {
+				legend: {
+					display: false
+				},
+			}
+		});
+
+		var xtx = document.getElementById("pickRate");
+		var pickRateChart = new Chart (xtx, {
+			type: 'line',
+			data: {
+				labels: category,
+				datasets: [{
+					data: pickrate,
+					borderColor: '#c4c4c4',
+					backgroundColor: 'rgba(196,196,196,0.4)'
+				}],
+			},
+			options: {
+				legend: {
+					display: false
+				},
+			}
+		});

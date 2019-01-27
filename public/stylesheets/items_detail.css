@@ -15,18 +15,6 @@ a {
 	display: inline-block;
 }
 
-.header-content-secondary {
-	display: block;
-}
-
-.header-content-secondary dl {
-	display: inline-block;
-	margin: 5px 12px 14px 0;
-	vertical-align: top;
-	color: white;
-	font-size: 14px;
-}
-
 .header-content-avatar {
 	display: inline-block;
 }
@@ -64,6 +52,10 @@ section > article {
 
 section {
 	padding: 0 4px 0 4px;
+}
+
+.chart {
+	margin-bottom: 15px;
 }
 
 .item-details article {

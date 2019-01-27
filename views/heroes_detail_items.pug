@@ -5,7 +5,7 @@ block append head
 block append header-primary
 	div(class='header-content-avatar')
 		div(class='image-container image-container-avatar image-container-hero')
-			img(class='image-avatar', src=overview[0].image)
+			img(class='image-avatar', src=overview[0].img)
 	div(class='header-content-title')
 		h1 #{overview[0].name.replace(/\*/g, '')}
 		small Items
@@ -41,9 +41,10 @@ block content
 									each item in items
 										tr
 											td(class='cell-icon-item')
-												a(href='#')
+												a(href='/items/' + item.id)
 													img(class='item-icon image-item', src=item.image)
-											td #{item.name}
+											td
+												a(href='/items/' + item.id) #{item.name}
 											td #{item.timesUsed}
 											td #{item.wins}
 											td #{item.winrate.toFixed(2)}%

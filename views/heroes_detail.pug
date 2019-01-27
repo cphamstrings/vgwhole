@@ -5,7 +5,7 @@ block append head
 block append header-primary
 	div(class='header-content-avatar')
 		div(class='image-container image-container-avatar image-container-hero')
-			img(class='image-avatar', src=overview[0].image)
+			img(class='image-avatar', src=overview[0].img)
 	div(class='header-content-title')
 		h1 #{overview[0].name.replace(/\*/g, '')}
 		small Overview
@@ -23,6 +23,17 @@ block content
 					li(class='')
 						a(href='/heroes/' + overview[0].name.replace(/\*/g, '') + '/players') Players
 	div(class='content-inner')
+		div(class='row')
+			div(class='col-sm-6')
+				div(class='chart section-container')
+					section(class='stat-spread')
+						article
+							canvas(id='statSpread')
+			div(class='col-sm-6')
+				div(class='chart section-container')
+					section(class='role-distribution')
+						article
+							canvas(id='roleDistribution')
 		div(class='row')
 			div(class='col-sm-4')
 				div(class='chart section-container')
@@ -53,9 +64,10 @@ block content
 									each item in items
 										tr
 											td(class='cell-icon-item')
-												a(href= '#')
+												a(href= '/items/' + item.id)
 													img(class='item-icon image-item', src=item.image)
-											td #{item.name}
+											td
+												a(href= '/items/' + item.id) #{item.name}
 											td #{item.timesUsed}
 											td #{item.wins}
 											td #{item.winrate.toFixed(2)}%
@@ -73,9 +85,10 @@ block content
 									each hero in matchups
 										tr
 											td(class='cell-icon')
-												a(href='#')
+												a(href='/heroes/' + hero.name.replace(/\*/g, ''))
 													img(class='hero-icon', src=hero.image)
-											td #{hero.name.replace(/\*/g, '')}
+											td
+												a(href='/heroes/' + hero.name.replace(/\*/g, '')) #{hero.name.replace(/\*/g, '')}
 											td #{hero.played}
 											td #{hero.winrate.toFixed(2)}%
 				div(class='hero-matchups section-container')
@@ -92,16 +105,20 @@ block content
 									each hero in worstVersus
 										tr
 											td(class='cell-icon')
-												a(href='#')
+												a(href='/heroes/' + hero.name.replace(/\*/g, ''))
 													img(class='hero-icon', src=hero.image)
-											td #{hero.name.replace(/\*/g, '')}
+											td
+												a(href='/heroes/' + hero.name.replace(/\*/g, '')) #{hero.name.replace(/\*/g, '')}
 											td #{hero.played}
 											td #{hero.winrate.toFixed(2)}%
 	script(src='/scripts/Chart.js')
 	script.	
+		var statsCategory = ["Minion Kills", "Assists", "Deaths", "Kills", "Tower Kills"];
+		var statsData = [];
 		var category = [];
 		var winrate = [];
 		var pickrate = [];
+		var roles = [];
 		!{weekly}.forEach(function(element) {
 			var day = element._id.day.toString();
 			var month = element._id.month.toString();
@@ -111,7 +128,15 @@ block content
 			winrate.push(element.winrate);
 			pickrate.push(element.pickrate);
 		});
-		console.log(pickrate);
+		!{statSpread}.forEach(function(element) {
+			statsData.push((element.avgMinionKills)/10, element.avgAssists, element.avgDeaths, element.avgKills, (element.avgTowerKills)*2);
+		});
+	
+		!{roleDistribution}.forEach(function(element) {
+			roles.push(element.carryTotal, element.junglerTotal, element.captainTotal);
+		});
+
+		console.log(roles);
 		var ctx = document.getElementById("winrateChart");
 		var winrateChart = new Chart (ctx, {
 			type: 'line',
@@ -154,4 +179,49 @@ block content
 					}]
 				}
 			}
+		});
+		
+		var ztx = document.getElementById("statSpread")
+		var spreadChart = new Chart(ztx, {
+			type: 'radar',
+			data: {
+				labels: statsCategory,
+				datasets: [{
+					data: statsData,
+					borderColor: '#E0962D',
+					backgroundColor: 'rgba(224,150,45,0.4)'
+				}]
+			},
+			options: {
+				legend: {
+					display: false,
+				},
+				scale: {
+					ticks: {
+						display: false
+					},
+					pointLabels: {
+						fontSize: 14,
+						fontColor: '#c4c4c4'
+					}
+				}
+			}
+		});
+
+		var vtx = document.getElementById("roleDistribution")
+		var roleDistribution = new Chart (vtx, {
+			type: 'doughnut',
+			data: {
+				labels: ["Carry", "Jungler", "Captain"],
+				datasets: [{
+					data: roles,
+					backgroundColor: ['rgb(255,99,132)', 'rgb(54,162,235)', 'rgb(255,205,86)']
+				}],
+			},
+			options: {
+				legend: {
+					position: 'right'
+				}
+			}
+		
 		});
