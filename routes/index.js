@@ -6,7 +6,6 @@ var match_controller = require('../controllers/matchController');
 var players_controller = require('../controllers/playersController');
 var heroes_controller = require('../controllers/heroesController');
 var blog_controller = require('../controllers/blogController');
-var test_controller = require('../controllers/testController');
 var items_controller = require('../controllers/itemController');
 var search_controller = require('../controllers/searchController');
 
