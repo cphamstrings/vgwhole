@@ -42,7 +42,7 @@ app.use('/users', usersRouter);
 
 
 var mongoose = require('mongoose');
-var mongoDB = 'mongodb://cphamstrings:cdp10409@ds263837.mlab.com:63837/vainglory'
+var mongoDB = process.env.MONGODB_URI || 'mongodb://cphamstrings:cdp10409@ds263837.mlab.com:63837/vainglory';
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
 var db = mongoose.connection;
