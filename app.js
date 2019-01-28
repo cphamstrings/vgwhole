@@ -36,7 +36,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 
-// populatedb();
+populatedb();
 
 // Set up mongoose connection
 
