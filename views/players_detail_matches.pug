@@ -3,6 +3,7 @@ extends layout
 block append head
 	link(rel='stylesheet', href='/stylesheets/players_detail.css')
 	link(rel='stylesheet', href='/stylesheets/players_detail_matches.css')
+	title= matchTotals[0].matches.playerInfo.name + ' - Matches - VGwhole - Vainglory Stats'
 block append header-primary
 	div(class='header-content-medal')
 		div(class='image-container image-container-medal')

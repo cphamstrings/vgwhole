@@ -2,6 +2,7 @@ extends layout
 
 block append head
 	link(rel='stylesheet', href='/stylesheets/match_detail.css')
+	title= title
 block append header-primary
 	div(class='header-content-title')
 		h1 Match #{match[0].id}

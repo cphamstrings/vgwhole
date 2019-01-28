@@ -15,8 +15,6 @@ router.get('/', blog_controller.post_list);
 
 // GET request for search results.
 router.get('/search', search_controller.search);
-// GET request for test data.
-router.get('/test', test_controller.test);
 
 // MATCH ROUTES //
 

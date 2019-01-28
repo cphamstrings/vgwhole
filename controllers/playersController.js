@@ -4,13 +4,16 @@ var Match = require('../models/match');
 var async = require('async');
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
+var debug = require('debug')('players');
 
 
 // Display list of all players.
 exports.player_list = function(req, res) {
 	Player.find({})
+	.sort({'attributes.stats.skillTier': -1})
+	.limit(100)
 	.exec(function(err, list_player) {
-		if(err) {return next(err)};
+		if(err) { debug('get player list error:' + err); return next(err)};
 		// Successful so render
 		res.render('players', { title: 'All Players', player_list: list_player});
 	});
@@ -122,7 +125,6 @@ exports.player_detail = function(req, res) {
 
 			], function (err, recs){
 			if(err){
-				console.log(err);
 				cb(err);
 			} else {
 				cb(null, recs);
@@ -192,7 +194,6 @@ exports.player_detail = function(req, res) {
 
 			], function (err, recs) {
 			if(err) {
-				console.log(err);
 				cb(err);
 			} else {
 				cb(null, recs);
@@ -301,10 +302,8 @@ exports.player_detail = function(req, res) {
 
 			], function (err, recs) {
 			if(err) {
-				console.log(err);
 				cb(err);
 			} else {
-				console.log(recs);
 				cb(null, recs);
 			}
 			})
@@ -367,10 +366,8 @@ exports.player_detail = function(req, res) {
 
 			], function (err, recs) {
 			if(err) {
-				console.log(err);
 				cb(err);
 			} else {
-				console.log(recs);
 				cb(null, recs);
 			}
 			})
@@ -378,7 +375,7 @@ exports.player_detail = function(req, res) {
 		}
 	
 	}, function(err, results) {
-		if(err) {return next(err);}
+		if(err) { debug('get player detail error:' + err); return next(err);}
 		res.render('players_detail', {title: 'test', player: results.playerdetail, playerheroes: results.playerhero, recent_matches: results.matches_recent, playerid: req.params.id, weekly: JSON.stringify(results.weekly), roleDistribution: JSON.stringify(results.roleDistribution)});
 	});
 
@@ -489,12 +486,8 @@ exports.player_detail_matches = function(req, res) {
 								}	
 							}	
 						     
-						/*	role: {
-								captain: { $cond: [{ $eq: ["$hero_pop.role", "Protector"] }, {$sum:1}, ''] },
-								jungler: { $cond: [{ $gte: ["$participant_pop.attributes.stats.jungleKills", "$participant_pop.attributes.stats.nonJungleMinionKills"] }, {$sum:1}, '']},
-								carry: { $cond: [{ $gte: ["$participant_pop.attributes.stats.nonJungleMinionKills", "$participant_pop.attributes.stats.jungleKills"] }, {$sum:1}, '']}
-							}
-					*/	},		
+							
+						},		
 					
 						player: "$participant_pop.relationships.player.data.id"
 					}
@@ -601,10 +594,8 @@ exports.player_detail_matches = function(req, res) {
 
 			], function (err,recs) {
 			if(err) {
-				console.log(err);
 				cb(err);
 			} else {
-				console.log(recs);
 				cb(null, recs);
 			}
 			})
@@ -612,7 +603,7 @@ exports.player_detail_matches = function(req, res) {
 		}
 		
 	}, function(err, results) {
-		if(err) {return next(err);}
+		if(err) { debug('get player matches error:' + err); return next(err);}
 		res.render('players_detail_matches', {playerid: req.params.id, matchTotals: results.totalMatches, chartData: JSON.stringify(results.totalMatches)});
 	});
 
@@ -751,17 +742,15 @@ exports.player_detail_heroes = function (req, res) {
 				
 			], function(err, recs) {
 			if(err) {
-				console.log(err);
 				cb(err);
 			} else {
-				console.log(recs);
 				cb(null, recs);
 			}
 			})
 		}
 
 	}, function(err, results) {
-		if(err) {return next(err);}
+		if(err) { debug('get player heroes error:' + err); return next(err);}
 		res.render('players_detail_heroes', {playerId: req.params.id, heroPlayer: results.playerHeroes}  )
 	
 	});

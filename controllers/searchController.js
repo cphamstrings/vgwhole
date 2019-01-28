@@ -8,6 +8,7 @@ var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
 const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
+var debug = require('debug')('search');
 
 exports.search = [
 	// Validate that the field is not empty
@@ -151,8 +152,7 @@ exports.search = [
 			},
 
 		}, function(err, results) {
-			if(err) {return next(err);}
-			console.log(results);
+			if(err) { debug('search error:' + err); return next(err);}
 			res.render('search', { itemSearch : results.itemSearch, playerSearch: results.playerSearch, heroSearch: results.heroSearch, matchSearch: results.matchSearch, rosterSearch: results.rosterSearch});
 		});
 	}

@@ -2,6 +2,7 @@ extends layout
 
 block append head
 	link(rel='stylesheet', href='/stylesheets/items_detail.css')
+	title #{itemDetail[0].name} - Items - VGwhole - Vainglory Stats
 block append header-primary
 	div(class='image-container image-container-avatar image-container-item')
 		img(class='image-avatar image-item', src=itemDetail[0].image)

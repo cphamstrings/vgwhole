@@ -17,51 +17,16 @@ exports.match_list = function(req, res, next) {
 				}
 			}
 		})
+		.sort({'attributes.createdAt': -1} )
+		.limit(100)
 		.exec(function(err, list_match) {
-			if(err) {return next(err)};
+			if(err) {debug('get match list error:' + err); return next(err)};
 			
 			// Successful, so render
-			console.log(res);
 	
-			res.render('matches', { title: 'Matches', match_list: list_match});
+			res.render('matches', { title: 'Recent Matches', match_list: list_match});
 		});	
 	
-/*	async.parallel({ 
-		match_list: function(cb) {
-			Match.aggregate([
-				
-				{
-					$lookup: {
-						from: "rosters",
-						localField: "relationships.rosters.data.id",
-						foreignField: "id",
-						as: "roster_pop"
-					}
-				},
-
-				{
-					$lookup: {
-						from: "participants",
-						localField: "roster_pop.relationships.participant.data.id",
-						foreignField: "id",
-						as: "participant_pop",
-					}
-				}
-
-			], function (err, recs) {
-			if(err){
-				cb(err);
-			} else {
-				console.log(recs);
-				cb(null, recs);
-				}
-			});
-		},
-		
-	}, function (err, results) {
-		res.render('matches', {title: 'Matches', match_list: results.match_list });
-	});
-	*/
 };
 
 // Display detail page for a specific match.
@@ -241,7 +206,8 @@ exports.match_detail = function(req, res) {
 		},
 
 	}, function (err, results) {
-		res.render('match_detail', {title: 'test', match: results.matchdetail, matchTotal: results.matchTotal, chartData: JSON.stringify(results.matchTotal)});
+		if(err) {debug('get match detail error:' + err); return next(err);}
+		res.render('match_detail', {title: 'Match Details - ' + req.params.id + ' - VGwhole - Vainglory Stats', match: results.matchdetail, matchTotal: results.matchTotal, chartData: JSON.stringify(results.matchTotal)});
 	});
 };
 

@@ -4,6 +4,7 @@ var Item = require('../models/items');
 var Match = require('../models/match');
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
+var debug = require('debug')('items');
 
 // Display list of items
 exports.item_list = function(req, res, next) {
@@ -70,7 +71,6 @@ exports.item_list = function(req, res, next) {
 
 			], function (err, recs) {
 				if(err) {
-					console.log(err);
 					cb(err);
 				} else {
 					cb(null, recs);
@@ -85,7 +85,6 @@ exports.item_list = function(req, res, next) {
 				}
 			], function (err, recs) {
 				if(err) {
-					console.log(err);
 					cb(err);
 				} else {
 					cb(null, recs);
@@ -94,8 +93,8 @@ exports.item_list = function(req, res, next) {
 		}
 		
 	}, function(err, results) {
-		if(err) {return next(err);}
-		res.render('items', {title: 'test', items: results.list_item, count: results.participantCount});
+		if(err) { debug('get item list error:' + err); return next(err);}
+		res.render('items', {title: 'All Items - ', items: results.list_item, count: results.participantCount});
 	
 	});
 
@@ -182,7 +181,6 @@ exports.item_detail = function(req, res, next) {
 
 			], function (err, recs) {
 				if(err) {
-					console.log(err);
 					cb(err);
 				} else {
 					cb(null, recs);
@@ -220,7 +218,6 @@ exports.item_detail = function(req, res, next) {
 
 			], function(err, recs) {
 				if(err) {
-					console.log(err);
 					cb(err);
 				} else {
 					cb(null, recs);
@@ -325,7 +322,6 @@ exports.item_detail = function(req, res, next) {
 
 			], function(err, recs) {
 				if(err) {
-					console.log(err);
 					cb(err);
 				} else {
 					cb(null, recs);
@@ -452,17 +448,15 @@ exports.item_detail = function(req, res, next) {
 
 			], function(err, recs) {
 				if(err) {
-					console.log(err);
 					cb(err);
 				} else {
-					console.log(recs);
 					cb(null, recs);
 				}
 			})
 		},
 	},	
 	function(err, results) {
-		if(err) {return next(err);}
+		if(err) {debug('get items detail error:' + err); return next(err);}
 		res.render('items_detail', {itemHero: results.itemHero, itemDetail: results.itemDetails, popularity: results.popularityWinrate, weekly: JSON.stringify(results.weekly)});
 	});
 		

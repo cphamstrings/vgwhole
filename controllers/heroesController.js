@@ -6,15 +6,19 @@ var Participant = require('../models/participant');
 var async = require ('async');
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
+var debug = require('debug')('heroes');
 
 // Display list of all heroes
 exports.heroes_list = function(req, res, next) {
 	Hero.find({})
 	.sort('name')
 	.exec(function(err, list_hero) {
-		if(err) {return next(err)};
+		if(err) {
+			debug('get error:' + err);
+			return next(err)
+		};
 		// Successful so render
-		res.render('heroes', { title: 'All Heroes', hero_list: list_hero });
+		res.render('heroes', { title: 'All Heroes - ', hero_list: list_hero });
 	});
 };
 
@@ -30,10 +34,10 @@ exports.hero_detail = function(req, res, next) {
 
 			], function (err, recs) {
 			if(err) {
-				console.log(err);
+				debug('get details error:' + err);
 				cb(err);
 			} else {
-				console.log(recs);	
+	
 				cb(null, recs);
 			}
 			})
@@ -103,11 +107,13 @@ exports.hero_detail = function(req, res, next) {
 					}
 				},
 
-				{ $sort: { timesUsed : -1 } }
+				{ $sort: { timesUsed : -1 } },
+
+				{ $limit: 10 }
 
 			], function (err, recs) {
 			if(err) {
-				console.log(err);
+				debug('get hero items error:' + err);
 				cb(err);
 			} else {
 				cb(null, recs);
@@ -242,11 +248,13 @@ exports.hero_detail = function(req, res, next) {
 					}
 				},
 
-				{ $sort: {"winrate" : -1, "played": -1} }
+				{ $sort: {"winrate" : -1, "played": -1} },
+
+				{ $limit: 10 }
 
 			], function (err, recs) {
 			if(err) {
-				console.log(err);
+				debug('get matchups error:' + err);
 				cb(err);
 			} else {
 				
@@ -384,11 +392,13 @@ exports.hero_detail = function(req, res, next) {
 					}
 				},
 
-				{ $sort: {"winrate" : 1, "played": -1 } }
+				{ $sort: {"winrate" : 1, "played": -1 } },
+
+				{ $limit: 10 }
 
 			], function (err, recs) {
 			if(err) {
-				console.log(err);
+				debug('get worstversus error:' + err);
 				cb(err);
 			} else {
 				
@@ -398,91 +408,6 @@ exports.hero_detail = function(req, res, next) {
 
 		},
 		
-/*		weekly: function(cb) {
-			var today = new Date(),
-			    oneDay = ( 1000 * 60 * 60 * 24 ),
-			    sevenDays = new Date( today.valueOf() - ( 7 * oneDay ) );
-
-			Participant.aggregate([
-			
-				{
-					$match: {
-						"attributes.actor": {$regex: req.params.name, $options: 'i'}
-
-					}
-				},
-
-				{
-					$lookup: {
-						from: "rosters",
-						localField: "id",
-						foreignField: "relationships.participants.data.id",
-						as: "roster_pop"
-					}
-				},
-
-				{
-					$lookup: {
-						from: "matches",
-						localField: "roster_pop.id",
-						foreignField: "relationships.rosters.data.id",
-						as: "match_pop"
-					}
-				},
-
-				{
-					$unwind: "$match_pop"
-				},
-
-				{
-					$project: {
-						won: { $cond: [{ $eq: ["$attributes.stats.winner", true]}, {$sum:1}, '']},
-						date: {
-							$dateFromString: {
-								dateString: "$match_pop.attributes.createdAt",
-							}
-						},
-					}
-				},
-
-				{
-					$project: {
-						"won": 1,
-						month: { $month: "$date" },
-						day: { $dayOfMonth: "$date" }
-					}
-				},
-
-				{
-					$group: {
-						_id: { day: "$day", month: "$month" },
-						wins: { $sum: "$won" },
-						gamesPlayed: { $sum: 1},
-					}
-				},
-
-				{ $sort: { "_id.day": 1 } },
-				
-
-				{
-					$project: {
-						winrate: { $multiply: [ 
-							{ $divide: ["$wins", "$gamesPlayed" ] },
-							100 ] }
-					}
-				}
-
-			], function (err, recs) {
-			if(err) {
-				console.log(err);
-				cb(err);
-			} else {
-				cb(null, recs);
-			}
-			})
-	
-		},
-*/
 		weekly: function(cb) {
 			var today = new Date(),
 				oneDay = ( 1000 * 60 * 60 * 24),
@@ -608,7 +533,7 @@ exports.hero_detail = function(req, res, next) {
 
 			], function (err, recs) {
 			if(err) {
-				console.log(err);
+				debug('get weekly stats error:' + err);
 				cb(err);
 			} else {
 				cb(null, recs);
@@ -640,7 +565,7 @@ exports.hero_detail = function(req, res, next) {
 
 			], function(err, recs) {
 			if(err) {
-				console.log(err);
+				debug('get stats spread error:' + err);
 				cb(err);
 			} else {
 				cb(null, recs);
@@ -702,10 +627,9 @@ exports.hero_detail = function(req, res, next) {
 
 			], function(err, recs) {
 			if(err) {
-				console.log(err);
+				debug('get role distribution error:' + err);
 				cb(err);
 			} else {
-				console.log(recs);
 				cb(null, recs);
 			}
 			})
@@ -713,7 +637,7 @@ exports.hero_detail = function(req, res, next) {
 
 	}, function(err, results) {
 		if(err) {return next(err);}
-		res.render('heroes_detail', {overview: results.heroesOverview, items: results.heroesItems, matchups: results.heroesMatchup, worstVersus: results.worstVersus, weekly: JSON.stringify(results.weekly), statSpread: JSON.stringify(results.statSpread), roleDistribution: JSON.stringify(results.roleDistribution)})
+		res.render('heroes_detail', { title: req.params.name + ' - Overview - ', overview: results.heroesOverview, items: results.heroesItems, matchups: results.heroesMatchup, worstVersus: results.worstVersus, weekly: JSON.stringify(results.weekly), statSpread: JSON.stringify(results.statSpread), roleDistribution: JSON.stringify(results.roleDistribution)})
 	})
 }
 
@@ -789,7 +713,6 @@ exports.hero_items = function(req, res, next) {
 
 			], function (err, recs) {
 			if(err) {
-				console.log(err);
 				cb(err);
 			} else {
 				cb(null, recs);
@@ -808,10 +731,8 @@ exports.hero_items = function(req, res, next) {
 
 			], function (err, recs) {
 			if(err) {
-				console.log(err);
 				cb(err);
 			} else {
-				console.log(recs);
 				cb(null, recs);
 			}
 			})
@@ -820,7 +741,7 @@ exports.hero_items = function(req, res, next) {
 
 	}, function(err, results) {
 		if(err) {return next(err);}
-		res.render('heroes_detail_items', { overview: results.heroOverview, items: results.heroesItems});
+		res.render('heroes_detail_items', { title: req.params.name + ' - Items - ', overview: results.heroOverview, items: results.heroesItems});
 	})
 }
 
@@ -898,14 +819,14 @@ exports.hero_detail_players = function(req, res, next) {
 					}
 				},
 
-				{ $sort: { tier: -1, winrate: -1, played: -1 } } 
+				{ $sort: { tier: -1, winrate: -1, played: -1 } },
+
+				{ $limit: 100 }
 
 			], function (err, recs) {
 			if(err) {
-				console.log(err);
 				cb(err);
 			} else {
-				console.log(recs);
 				cb(null, recs);
 			}
 			})
@@ -923,18 +844,16 @@ exports.hero_detail_players = function(req, res, next) {
 
 			], function (err, recs) {
 			if(err) {
-				console.log(err);
 				cb(err);
 			} else {
-				console.log(recs);
 				cb(null, recs);
 			}
 			})
 
 		},
 	}, function(err, results) {
-		if(err) {return next(err);}
-		res.render('heroes_detail_players', { players: results.heroPlayers, overview: results.heroOverview })
+		if(err) { debug('get heroes players error:' + err); return next(err);}
+		res.render('heroes_detail_players', { title: req.params.name + ' - Players - ', players: results.heroPlayers, overview: results.heroOverview })
 	})
 }
 
@@ -945,8 +864,8 @@ exports.hero_detail_abilities = function(req, res, next) {
 	.populate('abilities')
 	.exec(function(err, hero_detail) {
 		
-		if(err) {return next(err)};
+		if(err) { debug('get hero abilities error:' + err); return next(err)};
 		// Successful so render
-		res.render('heroes_detail_abilities', { title: hero_detail.name, hero: hero_detail})
+		res.render('heroes_detail_abilities', { title: hero_detail.name + ' - Abilities - ', hero: hero_detail})
 	}); 
 }; 
