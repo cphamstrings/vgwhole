@@ -1,5 +1,5 @@
 module.exports = exports = function() { 
-	var mongoDB = "mongodb://cphamstrings:cdp10409@ds263837.mlab.com:63837/vainglory";
+	var mongoDB = "mongodb url here";
 	var https = require('https');
 	var date = new Date();
 	var today = date.toISOString();
@@ -10,12 +10,12 @@ module.exports = exports = function() {
 		path: "/shards/na/matches?filter[createdAt-start]=" + today,
 		method: "GET",
 		headers: { "Accept" : "application/vnd.api+json",
-			   "Authorization" : "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIzNjMwZjcwMC1iMjEzLTAxMzUtMTFiNS0wYTU4NjQ2MGE3MDciLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNTExMzk2OTM0LCJwdWIiOiJzZW1jIiwidGl0bGUiOiJ2YWluZ2xvcnkiLCJhcHAiOiJ2YWluZ2xvcnl3aG9sZSIsInNjb3BlIjoiY29tbXVuaXR5IiwibGltaXQiOjEwfQ.aT3Dgug-Ie58huOcwkdwkryLRQc4sH_d1ggUElaR7Tw"
+			   "Authorization" : "your key here"
 		}
 	};
 
 	var MongoClient = require('mongodb').MongoClient;
-	var url = "mongodb://cphamstrings:cdp10409@ds263837.mlab.com:63837/vainglory";
+	var url = "mongodb url here";
 
 	var minutes = 15, the_interval = minutes * 60 * 1000;
 	setInterval(function() {
