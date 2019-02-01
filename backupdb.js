@@ -1,7 +1,7 @@
 var backup = require('mongodb-backup');
 
 backup({
-	uri: 'mongodb://cphamstrings:cdp10409@ds263837.mlab.com:63837/vainglory',
+	uri: 'mongodb uri here',
 	root: "../Documents/mongodb_backup",
 	callback: function(err) {
 		if(err) {
